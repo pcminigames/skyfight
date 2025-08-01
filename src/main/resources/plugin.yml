@@ -1,0 +1,16 @@
+name: "skyfight"
+version: "1.0"
+main: "skyfight.PluginMain"
+api-version: "1.21"
+authors: [pythoncraft]
+
+commands:
+  kit:
+    description: "Open the kit selection GUI"
+    usage: "/kit"
+  cleararena:
+    description: "Clear the arena"
+    usage: "/cleararena"
+  inventory:
+    description: "Set up the inventory management"
+    usage: "/inventory <help|list|use|reset|new|submit|try|exit>"
