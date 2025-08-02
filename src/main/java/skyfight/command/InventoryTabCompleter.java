@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import skyfight.PluginMain;
+import com.pythoncraft.gamelib.inventory.order.InventoryOrder;
 
 public class InventoryTabCompleter implements TabCompleter {
 
@@ -23,7 +23,7 @@ public class InventoryTabCompleter implements TabCompleter {
             }
             case 2 -> {
                 if (args[0].equalsIgnoreCase("use") || args[0].equalsIgnoreCase("try") || args[0].equalsIgnoreCase("remove")) {
-                    return PluginMain.inventoryOrders.keySet().stream().toList();
+                    return InventoryOrder.orders.keySet().stream().toList();
                 }
             }
             default -> {

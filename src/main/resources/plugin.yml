@@ -1,8 +1,10 @@
 name: "skyfight"
-version: "1.0"
+version: "4.0"
 main: "skyfight.PluginMain"
 api-version: "1.21"
 authors: [pythoncraft]
+depend: [GameLib]
+depends: [GameLib]
 
 commands:
   kit:

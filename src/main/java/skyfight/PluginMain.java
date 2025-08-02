@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.logging.Level;
-
-import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -58,10 +55,17 @@ import com.google.common.collect.MultimapBuilder;
 
 import skyfight.command.InventoryCommand;
 import skyfight.command.InventoryTabCompleter;
-import skyfight.gui.GUIClickEvent;
-import skyfight.gui.GUIIdentifier;
-import skyfight.gui.GUIManager;
-import skyfight.lib.Pair;
+import com.pythoncraft.gamelib.gui.GUIClickEvent;
+import com.pythoncraft.gamelib.gui.GUIIdentifier;
+import com.pythoncraft.gamelib.gui.GUIManager;
+import com.pythoncraft.gamelib.type.Pair;
+import com.pythoncraft.gamelib.inventory.Kit;
+import com.pythoncraft.gamelib.inventory.order.InventoryOrder;
+import com.pythoncraft.gamelib.inventory.ConditionalItem;
+import com.pythoncraft.gamelib.inventory.ItemTemplate;
+import com.pythoncraft.gamelib.BlockFill;
+import com.pythoncraft.gamelib.Chat;
+import com.pythoncraft.gamelib.Logger;
 
 
 public class PluginMain extends JavaPlugin implements Listener {
@@ -78,7 +82,7 @@ public class PluginMain extends JavaPlugin implements Listener {
     public static Kit defaultKit = new Kit("default", Material.STICK, new HashMap<>());
     public static Kit showcaseKit = new Kit("showcase", Material.STICK, new HashMap<>());
 
-    public static List<Fill> arenaFills = new ArrayList<>();
+    public static List<BlockFill> arenaFills = new ArrayList<>();
     public static World world;
 
     public static ScoreboardManager sm;
@@ -96,9 +100,6 @@ public class PluginMain extends JavaPlugin implements Listener {
 
     public static boolean game = false;
     public static HashSet<Player> players = new HashSet<>();
-
-    public static HashMap<String, HashMap<String, Integer>> inventoryOrders = new HashMap<>();
-    public static HashMap<String, String> savedInventories = new HashMap<>();
 
     public static HashMap<String, String> slotNames = new HashMap<String, String>() {{
         put("iron_axe", "axe");
@@ -190,16 +191,16 @@ public class PluginMain extends JavaPlugin implements Listener {
         this.loadConfig();
 
         GUIManager.getInstance().register("team", true, guiPlayer -> {
-            Inventory inventory = Bukkit.createInventory(new GUIIdentifier("team"), 27, c("§lSelect Team"));
+            Inventory inventory = Bukkit.createInventory(new GUIIdentifier("team"), 27, Chat.c("§lSelect Team"));
 
             ItemStack red = new ItemStack(Material.RED_WOOL);
             ItemMeta redMeta = red.getItemMeta();
-            redMeta.setDisplayName(c("§c§lRed Team"));
+            redMeta.setDisplayName(Chat.c("§c§lRed Team"));
             red.setItemMeta(redMeta);
 
             ItemStack yellow = new ItemStack(Material.YELLOW_WOOL);
             ItemMeta yellowMeta = yellow.getItemMeta();
-            yellowMeta.setDisplayName(c("§e§lYellow Team"));
+            yellowMeta.setDisplayName(Chat.c("§e§lYellow Team"));
             yellow.setItemMeta(yellowMeta);
 
             inventory.setItem(11, red);
@@ -209,18 +210,18 @@ public class PluginMain extends JavaPlugin implements Listener {
         });
 
         GUIManager.getInstance().register("kit", true, guiPlayer -> {
-            Inventory inventory = Bukkit.createInventory(new GUIIdentifier("kit"), 54, c("§lSelect Kit"));
+            Inventory inventory = Bukkit.createInventory(new GUIIdentifier("kit"), 54, Chat.c("§lSelect Kit"));
 
             int slot = 0;
             for (Kit kit : kits) {
-                if ("default".equals(kit.name)) {continue;}
+                if ("default".equals(kit.displayName)) {continue;}
                 
                 Material kitMaterial = kit.material != null ? kit.material : Material.STICK;
                 ItemStack item = new ItemStack(kitMaterial);
                 ItemMeta meta = item.getItemMeta();
 
                 if (meta != null) {
-                    meta.setDisplayName(kit.name);
+                    meta.setDisplayName(kit.displayName);
                     meta.setAttributeModifiers(MultimapBuilder.hashKeys().hashSetValues().build());
                     meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                     item.setItemMeta(meta);
@@ -232,7 +233,7 @@ public class PluginMain extends JavaPlugin implements Listener {
 
             ItemStack barrier = new ItemStack(Material.BARRIER);
             ItemMeta barrierMeta = barrier.getItemMeta();
-            barrierMeta.setDisplayName(c("§c§lBack to team selection"));
+            barrierMeta.setDisplayName(Chat.c("§c§lBack to team selection"));
             barrier.setItemMeta(barrierMeta);
             inventory.setItem(53, barrier);
 
@@ -349,13 +350,13 @@ public class PluginMain extends JavaPlugin implements Listener {
             game = false;
 
             Bukkit.getScheduler().runTask(this, () -> {
-                Bukkit.broadcastMessage(c("§lGame Over!"));
+                Bukkit.broadcastMessage(Chat.c("§lGame Over!"));
                 if (hasRedFinal && !hasYellowFinal) {
-                    Bukkit.broadcastMessage(c("§c§lRed Team§r wins!"));
+                    Bukkit.broadcastMessage(Chat.c("§c§lRed Team§r wins!"));
                 } else if (hasYellowFinal && !hasRedFinal) {
-                    Bukkit.broadcastMessage(c("§e§lYellow Team§r wins!"));
+                    Bukkit.broadcastMessage(Chat.c("§e§lYellow Team§r wins!"));
                 } else if (!hasRedFinal && !hasYellowFinal) {
-                    Bukkit.broadcastMessage(c("§a§lNo one wins!§r"));
+                    Bukkit.broadcastMessage(Chat.c("§a§lNo one wins!§r"));
                 }
             });
 
@@ -400,16 +401,12 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
 
-    public static String c(String text) {
-        return ChatColor.translateAlternateColorCodes('&', text);
-    }
-
     public static ItemStack getMenuItem() {
         ItemStack item = new ItemStack(Material.HEART_OF_THE_SEA);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(c("§b§lSkyFight Menu"));
-            meta.setLore(List.of(c("§7Right click to open the menu")));
+            meta.setDisplayName(Chat.c("§b§lSkyFight Menu"));
+            meta.setLore(List.of(Chat.c("§7Right click to open the menu")));
             meta.addEnchant(Enchantment.VANISHING_CURSE, 1, true);
             item.setItemMeta(meta);
         }
@@ -446,7 +443,7 @@ public class PluginMain extends JavaPlugin implements Listener {
 
     public static void startGame() {
         game = true;
-        Bukkit.broadcastMessage(c("\n§lGame started!"));
+        Bukkit.broadcastMessage(Chat.c("\n§lGame started!"));
 
         for (Player player : players) {
             player.setGameMode(GameMode.SURVIVAL);
@@ -468,7 +465,7 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
     public void spectate(Player player) {
-        player.sendMessage(c("§c§lYou are now spectating the game!"));
+        player.sendMessage(Chat.c("§c§lYou are now spectating the game!"));
         player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
         player.setHealth(20);
@@ -485,78 +482,78 @@ public class PluginMain extends JavaPlugin implements Listener {
 
 
     public void useInventory(Player player, String inventoryName) {
-        HashMap<String, Integer> inventory = inventoryOrders.get(inventoryName);
+        InventoryOrder inventory = InventoryOrder.orders.get(inventoryName);
         if (inventory == null) {
-            player.sendMessage(c(" §c§lInventory \"" + inventoryName + "\" not found!"));
+            player.sendMessage(Chat.c("§c§lInventory \"" + inventoryName + "\" not found!"));
             return;
         }
 
-        savedInventories.put(player.getName(), inventoryName);
+        InventoryOrder.playerOrders.put(player.getName(), inventoryName);
 
         try {
             config.set("saved-inventories." + player.getName(), inventoryName);
             config.save(configFile);
         } catch (IOException e) {
             e.printStackTrace();
-            player.sendMessage(c(" §c§lFailed to save inventory!"));
+            player.sendMessage(Chat.c("§c§lFailed to save inventory!"));
             return;
         }
 
-        player.sendMessage(c(" Inventory successfully updated to §a§l" + inventoryName + "§r."));
+        player.sendMessage(Chat.c("Inventory successfully updated to §a§l" + inventoryName + "§r."));
     }
 
     public void tryInventory(Player player, String inventoryName) {
         if (game || players.contains(player)) {
-            player.sendMessage(c(" §c§lYou cannot try an inventory while a game is in progress!"));
+            player.sendMessage(Chat.c("§c§lYou cannot try an inventory while a game is in progress!"));
             return;
         }
 
-        HashMap<String, Integer> inventory = inventoryOrders.get(inventoryName);
+        InventoryOrder inventory = InventoryOrder.orders.get(inventoryName);
         if (inventory == null) {
-            player.sendMessage(c(" §c§lInventory \"" + inventoryName + "\" not found!"));
+            player.sendMessage(Chat.c("§c§lInventory \"" + inventoryName + "\" not found!"));
             return;
         }
 
         applyInventory(player, inventory);
     }
 
-    public void applyInventory(Player player, HashMap<String, Integer> inventory) {
+    public void applyInventory(Player player, InventoryOrder inventory) {
         player.getInventory().clear();
         defaultKit.give(player, inventory);
         showcaseKit.give(player, inventory);
     }
 
     public void createInventory(Player player, HashMap<Integer, String> items, String name) {
-        HashMap<String, Integer> order = new HashMap<>();
+        InventoryOrder order = new InventoryOrder();
 
         for (int slot : items.keySet()) {
-            order.put(slotNames.get(items.get(slot).toLowerCase()), slot);
+            order.addSlot(slotNames.get(items.get(slot).toLowerCase()), slot);
         }
 
-        inventoryOrders.put(name, order);
-        savedInventories.put(player.getName(), name);
+        InventoryOrder.orders.put(name, order);
+        InventoryOrder.playerOrders.put(player.getName(), name);
 
         try {
             config.set("inventory." + name, order);
             config.save(configFile);
         } catch (IOException e) {
             e.printStackTrace();
-            player.sendMessage(c(" §c§lFailed to create inventory!"));
+            player.sendMessage(Chat.c("§c§lFailed to create inventory!"));
             return;
         } finally {
             // InventoryCommand.exit(player);
         }
 
-        player.sendMessage(c(" Inventory §a§l\"" + name + "\"§r created successfully!"));
+        player.sendMessage(Chat.c("Inventory §a§l\"" + name + "\"§r created successfully!"));
     }
 
     public void removeInventory(String name) {
-        inventoryOrders.remove(name);
-        savedInventories.values().removeIf(value -> value.equals(name));
+        InventoryOrder.orders.remove(name);
+        InventoryOrder.playerOrders.values().removeIf(value -> value.equals(name));
 
-        for (String playerName : savedInventories.keySet()) {
-            if (savedInventories.get(playerName).equals(name)) {
-                savedInventories.put(playerName, "default");
+        for (String playerName : InventoryOrder.playerOrders.keySet()) {
+            if (InventoryOrder.playerOrders.get(playerName).equals(name)) {
+                InventoryOrder.playerOrders.put(playerName, "default");
             }
         }
 
@@ -571,21 +568,8 @@ public class PluginMain extends JavaPlugin implements Listener {
 
 
     public void clearArena() {
-        for (Fill fill : arenaFills) {
-            Location pos1 = fill.getPos1();
-            Location pos2 = fill.getPos2();
-            Material material = fill.getMaterial();
-
-            if (pos1 == null || pos2 == null || material == null) {continue;}
-
-            for (int x = Math.min(pos1.getBlockX(), pos2.getBlockX()); x <= Math.max(pos1.getBlockX(), pos2.getBlockX()); x++) {
-                for (int y = Math.min(pos1.getBlockY(), pos2.getBlockY()); y <= Math.max(pos1.getBlockY(), pos2.getBlockY()); y++) {
-                    for (int z = Math.min(pos1.getBlockZ(), pos2.getBlockZ()); z <= Math.max(pos1.getBlockZ(), pos2.getBlockZ()); z++) {
-                        Location loc = new Location(pos1.getWorld(), x, y, z);
-                        loc.getBlock().setType(material);
-                    }
-                }
-            }
+        for (BlockFill fill : arenaFills) {
+            fill.fill(world);
         }
 
         for (Entity e : world.getEntities()) {
@@ -597,6 +581,21 @@ public class PluginMain extends JavaPlugin implements Listener {
         loadInventoryOrders();
         loadKits();
         loadArenaFill();
+
+        Logger.info("");
+        Logger.info("");
+        Logger.info("Loaded inventory orders:");
+
+        for (String key : InventoryOrder.orders.keySet()) {
+            Logger.info(" - " + key + ": " + InventoryOrder.orders.get(key).toString());
+        }
+
+        Logger.info("");
+        Logger.info("Loaded saved inventories:");
+        for (String playerName : InventoryOrder.playerOrders.keySet()) {
+            String inventoryName = InventoryOrder.playerOrders.get(playerName);
+            Logger.info(" - " + playerName + ": " + inventoryName);
+        }
     }
 
     private void loadInventoryOrders() {
@@ -604,15 +603,16 @@ public class PluginMain extends JavaPlugin implements Listener {
         if (inventorySection == null) {return;}
         
         for (String invKey : inventorySection.getKeys(false)) {
-            HashMap<String, Integer> order = new HashMap<>();
+            InventoryOrder order = new InventoryOrder();
+
             var invSection = inventorySection.getConfigurationSection(invKey);
             if (invSection == null) {continue;}
 
             for (String slot : invSection.getKeys(false)) {
-                order.put(slot, invSection.getInt(slot));
+                order.addSlot(slot, invSection.getInt(slot));
             }
 
-            inventoryOrders.put(invKey, order);
+            InventoryOrder.orders.put(invKey, order);
         }
 
         var savedSection = config.getConfigurationSection("saved-inventories");
@@ -621,7 +621,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         for (String playerName : savedSection.getKeys(false)) {
             String inventoryName = savedSection.getString(playerName);
             if (inventoryName != null) {
-                savedInventories.put(playerName, inventoryName);
+                InventoryOrder.playerOrders.put(playerName, inventoryName);
             }
         }
     }
@@ -648,23 +648,23 @@ public class PluginMain extends JavaPlugin implements Listener {
             var itemsSection = kitSection.getConfigurationSection("items");
             if (itemsSection != null) {
                 for (String itemKey : itemsSection.getKeys(false)) {
-                    List<Pair<ItemStack, Predicate<Player>>> itemStacks = new ArrayList<>();
+                    List<ConditionalItem> itemStacks = new ArrayList<>();
 
                     if (itemsSection.getConfigurationSection(itemKey) != null) {
                         var singleItemSection = itemsSection.getConfigurationSection(itemKey);
                         if (singleItemSection == null) {continue;}
 
                         ItemStack i = loadItemSection(singleItemSection, null);
-                        itemStacks.add(0, new Pair<>(i, player -> true));
+                        itemStacks.add(new ConditionalItem(i, player -> true));
 
                         if (singleItemSection.contains("yellow")) {
                             ItemStack yellowItem = loadItemSection(singleItemSection.getConfigurationSection("yellow"), i);
-                            itemStacks.add(0, new Pair<>(yellowItem, player -> yellowTeam.hasEntity(player)));
+                            itemStacks.add(0, new ConditionalItem(yellowItem, player -> yellowTeam.hasEntity(player)));
                         }
 
                         if (singleItemSection.contains("red")) {
                             ItemStack redItem = loadItemSection(singleItemSection.getConfigurationSection("red"), i);
-                            itemStacks.add(0, new Pair<>(redItem, player -> redTeam.hasEntity(player)));
+                            itemStacks.add(0, new ConditionalItem(redItem, player -> redTeam.hasEntity(player)));
                         }
                     } else {
                         String itemName = itemsSection.getString(itemKey);
@@ -680,7 +680,7 @@ public class PluginMain extends JavaPlugin implements Listener {
                         if (itemMaterial == null) {itemMaterial = Material.STICK;}
                         ItemStack itemStack = new ItemStack(itemMaterial);
                         itemStack.setAmount(count);
-                        itemStacks.add(new Pair<>(itemStack, player -> true));
+                        itemStacks.add(new ConditionalItem(itemStack, player -> true));
                     }
 
                     ItemTemplate itemTemplate = new ItemTemplate(itemStacks);
@@ -719,11 +719,11 @@ public class PluginMain extends JavaPlugin implements Listener {
             Location pos2 = new Location(world, Double.parseDouble(pos2Parts[0]), Double.parseDouble(pos2Parts[1]), Double.parseDouble(pos2Parts[2]));
             Material material = Material.getMaterial(areaSection.getString("block", "air").toUpperCase());
 
-            arenaFills.add(new Fill(pos1, pos2, material));
+            arenaFills.add(new BlockFill(pos1, pos2, material));
         }
     }
 
-    private ItemStack loadItemSection(ConfigurationSection itemSection, @Nullable ItemStack defaultItem) {
+    private ItemStack loadItemSection(ConfigurationSection itemSection, ItemStack defaultItem) {
         if (itemSection == null) {return null;}
 
         String itemId = itemSection.getString("id");

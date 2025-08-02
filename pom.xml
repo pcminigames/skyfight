@@ -4,7 +4,7 @@
 
     <groupId>skyfight</groupId>
     <artifactId>skyfight</artifactId>
-    <version>1.0</version>
+    <version>4.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,7 +17,32 @@
     </repositories>
 
     <dependencies>
-        <dependency><groupId>io.papermc.paper</groupId><artifactId>paper-api</artifactId><version>1.21.4-R0.1-SNAPSHOT</version><scope>provided</scope><exclusions><exclusion><groupId>io.papermc.paper</groupId><artifactId>paper-api</artifactId></exclusion><exclusion><groupId>org.spigotmc</groupId><artifactId>spigot-api</artifactId></exclusion><exclusion><groupId>org.bukkit</groupId><artifactId>bukkit</artifactId></exclusion></exclusions></dependency>
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.21.4-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.papermc.paper</groupId>
+                    <artifactId>paper-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>spigot-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.pythoncraft.gamelib</groupId>
+            <artifactId>gamelib</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
