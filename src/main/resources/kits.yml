@@ -1,0 +1,679 @@
+# Rozhodně nikdy neupravuj kit "showcase"
+# A "default" taky ne, pokud nevíš, co děláš.
+# Pokud chceš přidat nový kit, přidej ho na konec tohoto souboru.
+
+kits:
+  default:
+    name: default
+    material: stone
+    items:
+      axe:
+        id: iron_axe
+        durability: 0
+      planks1: oak_planks*64
+      pickaxe:
+        id: iron_pickaxe
+        durability: 0
+      bow:
+        id: bow
+        durability: 0
+      pork: cooked_porkchop*16
+      gapple: golden_apple*2
+      pearl: ender_pearl
+      water: water_bucket
+      
+      sword: iron_sword
+      bucket: bucket
+      
+      stone1: cobblestone*64
+      stone2: cobblestone*64
+      stone3: cobblestone*64
+      planks2: jungle_planks*64
+      planks3: jungle_planks*64
+      planks4: jungle_planks*64
+      logs1: jungle_log*64
+      logs2: jungle_log*64
+      logs3: jungle_log*64
+      
+      feet:
+        id: diamond_boots
+        durability: 0
+        trim-pattern: bolt
+        yellow:
+          trim-material: gold
+        red:
+          trim-material: redstone
+      legs:
+        id: diamond_leggings
+        durability: 0
+        trim-pattern: tide
+        yellow:
+          trim-material: gold
+        red:
+          trim-material: redstone
+      chest:
+        id: diamond_chestplate
+        durability: 0
+        trim-pattern: dune
+        yellow:
+          trim-material: gold
+        red:
+          trim-material: redstone
+      head:
+        id: diamond_helmet
+        durability: 0
+        trim-pattern: flow
+        yellow:
+          trim-material: gold
+        red:
+          trim-material: redstone
+      shield:
+        id: shield
+        durability: 0
+      flint:
+        id: flint_and_steel
+        durability: 0
+      arrow: arrow*64
+      potato: baked_potato*64
+  
+  showcase:
+    name: showcase
+    material: diamond
+    items:
+      axe:
+        id: iron_axe
+        durability: 0
+      planks1: oak_planks*64
+      pickaxe:
+        id: iron_pickaxe
+        durability: 0
+      bow:
+        id: stick
+        custom-name: Bow
+      pork: cooked_porkchop*16
+      gapple: golden_apple*2
+      pearl: snowball
+      water: water_bucket
+      
+      sword: iron_sword
+      bucket: bucket
+      
+      stone1: cobblestone*64
+      stone2: stone*64
+      stone3: smooth_stone*64
+      planks2: jungle_planks*64
+      planks3: spruce_planks*64
+      planks4: birch_planks*64
+      logs1: oak_log*64
+      logs2: jungle_log*64
+      logs3: spruce_log*64
+      
+      feet:
+        id: diamond_boots
+        durability: 0effects
+      legs:
+        id: diamond_leggings
+        durability: 0effects
+      chest:
+        id: diamond_chestplate
+        durability: 0effects
+      head:
+        id: diamond_helmet
+        durability: 0effects
+      shield:
+        id: shield
+        durability: 0
+      flint:
+        id: flint_and_steel
+        durability: 0
+      arrow: arrow*64
+      potato: baked_potato*64
+      
+      k1: red_concrete
+      k2: orange_concrete
+      k3: yellow_concrete
+      k4: lime_concrete
+      k5: green_concrete
+      k6: cyan_concrete
+      k7: light_blue_concrete
+      k8: blue_concrete
+      k9: purple_concrete
+      k10: magenta_concrete
+      k11: pink_concrete
+      k12: white_concrete
+      k13: gray_concrete
+      k14: black_concrete
+  
+  knockback:
+    name: §6§lKnockback
+    material: iron_sword
+    items:
+      k1:
+        id: iron_sword
+        enchantments:
+          knockback: 1
+        durability: 0
+  
+  elytra:
+    name: §b§lElytra
+    material: elytra
+    items:
+      k1:
+        id: elytra
+        durability: 33
+  
+  dripstone:
+    name: Dripstone
+    material: pointed_dripstone
+    items:
+      k1: pointed_dripstone*64
+      k2: pointed_dripstone*64
+  
+  creeper:
+    name: Creeper
+    material: creeper_spawn_egg
+    items:
+      k1: creeper_spawn_egg*12
+  
+  silverfish:
+    name: Infested
+    material: silverfish_spawn_egg
+    items:
+      k1: silverfish_spawn_egg*8
+      k2: infested_cobblestone*32
+      k3:
+        id: tipped_arrow
+        effects:
+          infested:
+            duration: 9600
+            amplifier: 0
+        potion-color: 505050
+        custom-name: Arrow of Infestation
+  
+  heal:
+    name: Heal
+    material: golden_apple
+    items:
+      k1: hay_block*64
+      k2:
+        id: potion
+        effects:
+          regeneration:
+            duration: 3600
+            amplifier: 0
+        potion-color: c74ebd
+        custom-name: Potion of Regeneration
+      k3:
+        id: splash_potion
+        effects:
+          instant_health:
+            duration: 0
+            amplifier: 1
+        potion-color: d55495
+        custom-name: Potion of Instant health II
+      k4:
+        id: splash_potion
+        effects:
+          instant_health:
+            duration: 0
+            amplifier: 1
+        potion-color: d55495
+        custom-name: Potion of Instant health II
+      k5:
+        id: splash_potion
+        effects:
+          instant_health:
+            duration: 0
+            amplifier: 1
+        potion-color: d55495
+        custom-name: Potion of Instant health II
+      k6:
+        id: splash_potion
+        effects:
+          instant_health:
+            duration: 0
+            amplifier: 1
+        potion-color: d55495
+        custom-name: Potion of Instant health II¨
+      k7:
+        id: splash_potion
+        effects:
+          instant_health:
+            duration: 0
+            amplifier: 1
+        potion-color: d55495
+        custom-name: Potion of Instant health II
+      gapple: golden_apple*4
+      pork: cooked_porkchop*643
+      potato:
+        id: air
+  
+  anchor:
+    name: Respawn anchor
+    material: respawn_anchor
+    items:
+      k1: respawn_anchor*8
+      k2: glowstone*64
+  
+  totem:
+    name: Totem of undying
+    material: totem_of_undying
+    items:
+      k1:
+        id: totem_of_undying
+      k2:
+        id: totem_of_undying
+  
+  wind_charge:
+    name: Wind charge
+    material: wind_charge
+    items:
+      k1: wind_charge*5
+  
+  cheater:
+    name: Cheater
+    material: command_block
+    items:
+      k1:
+        id: potion
+        effects:
+          resistance:
+            duration: 1800
+            amplifier: 32
+          absorption:
+            duration: 1800
+            amplifier: 9
+          speed:
+            duration: 1800
+            amplifier: 2
+        potion-color: 0000ff
+        custom-name: Potion of Cheating
+  
+  lava:
+    name: Lava
+    material: lava_bucket
+    items:
+      k1:
+        id: lava_bucket
+  
+  cobweb:
+    name: Cobweb
+    material: cobweb
+    items:
+      k1: cobweb*16
+  
+  levitation:
+    name: Levitation
+    material: shulker_shell
+    items:
+      k1:
+        id: potion
+        effects:
+          levitation:
+            duration: 800
+            amplifier: 0
+        potion-color: e7d9e2
+        custom-name: Potion of Levitation
+      k2:
+        id: potion
+        effects:
+          levitation:
+            duration: 200
+            amplifier: 1
+        potion-color: e7d9e2
+        custom-name: Potion of Levitation II
+      k3:
+        id: potion
+        effects:
+          levitation:
+            duration: 400
+            amplifier: 1
+        potion-color: e7d9e2
+        custom-name: Potion of Levitation II
+      k4:
+        id: potion
+        effects:
+          levitation:
+            duration: 120
+            amplifier: 3
+        potion-color: e7d9e2
+        custom-name: Potion of Levitation IV
+  
+  slow_falling:
+    name: Slow Falling
+    material: feather
+    items:
+      k1:
+        id: potion
+        effects:
+          slow_falling:
+            duration: 200
+            amplifier: 0
+        potion-color: 6f6186
+        custom-name: Potion of Slow Falling
+      k2:
+        id: potion
+        effects:
+          slow_falling:
+            duration: 400
+            amplifier: 0
+        potion-color: 6f6186
+        custom-name: Potion of Slow Falling
+      k3:
+        id: potion
+        effects:
+          slow_falling:
+            duration: 300
+            amplifier: 1
+        potion-color: 6f6186
+        custom-name: Potion of Slow Falling II
+      k4:
+        id: potion
+        effects:
+          slow_falling:
+            duration: 800
+            amplifier: 3
+        potion-color: 6f6186
+        custom-name: Potion of Slow Falling IV
+  troll:
+    name: Troll
+    material: poisonous_potato
+    items:
+      k1: barrier*2
+      k2: jukebox*64
+      k3: music_disc_creator_music_box
+  
+  crystal:
+    name: End crystal
+    material: end_crystal
+    items:
+      k1: end_crystal*4
+      k2: obsidian*12
+  
+  tnt:
+    name: TNT
+    material: tnt
+    items:
+      k1: tnt*16
+  
+  cart:
+    name: TNT minecart
+    material: tnt_minecart
+    items:
+      k1: rail*64
+      k2: tnt_minecart
+      k3: tnt_minecart
+      k4: tnt_minecart
+      k5: tnt_minecart
+      k6: tnt_minecart
+      k7: tnt_minecart
+      k8: tnt_minecart
+      k9: tnt_minecart
+      k10: tnt_minecart
+  
+  piercing:
+    name: Piercing
+    material: crossbow
+    items:
+      k1:
+        id: crossbow
+        enchantments:
+          piercing: 1
+        durability: 0
+  
+  infinity:
+    name: Infinity
+    material: arrow
+    items:
+      bow:
+        id: bow
+        enchantments:
+          infinity: 1
+        durability: 0
+  
+  one_shot:
+    name: One shot bow
+    material: bow
+    items:
+      k1:
+        id: bow
+        enchantments:
+          power: 33
+        durability: 1
+  
+  vault:
+    name: vault
+    material: trial_key
+    items:
+      k1: vault
+      k2: trial_key
+  
+  blocks:
+    name: Blocks
+    material: Copper_block
+    items:
+      k1: anvil
+      k2: copper_block*64
+      k3: honey_block*64
+      k4: sponge*64
+  
+  mace:
+    name: Mace
+    material: mace
+    items:
+      k1:
+        id: mace
+        durability: 0
+  
+  fire_aspect:
+    name: Fire aspect
+    material: fire_charge
+    items:
+      k1:
+        id: iron_sword
+        enchantments:
+          fire_aspect: 1
+        durability: 0
+  
+  rod:
+    name: Fishing rod
+    material: fishing_rod
+    items:
+      k1:
+        id: fishing_rod
+        durability: 0
+  
+  pearl:
+    name: Ender pearl
+    material: ender_pearl
+    items:
+      pearl: ender_pearl*6
+  
+  efficiency:
+    name: Efficiency
+    material: iron_pickaxe
+    items:
+      axe:
+        id: iron_axe
+        enchantments:
+          efficiency: 7
+        durability: 0
+      sword:
+        id: iron_sword
+        enchantments:
+          efficiency: 7
+        durability: 0
+      pickaxe:
+        id: iron_pickaxe
+        enchantments:
+          efficiency: 7
+        durability: 0
+  
+  armor:
+    name: Armor
+    material: diamond_chestplate
+    items:
+      feet:
+        id: diamond_boots
+        trim-pattern: bolt
+        yellow:
+          trim-material: gold
+        red:
+          trim-material: redstone
+        enchantments:
+          protection: 3
+        durability: 0
+      legs:
+        id: diamond_leggings
+        trim-pattern: bolt
+        yellow:
+          trim-material: gold
+        red:
+          trim-material: redstone
+        enchantments:
+          protection: 2
+        durability: 0
+      chest:
+        id: diamond_chestplate
+        trim-pattern: bolt
+        yellow:
+          trim-material: gold
+        red:
+          trim-material: redstone
+        enchantments:
+          protection: 3
+        durability: 0
+      head:
+        id: diamond_helmet
+        trim-pattern: bolt
+        yellow:
+          trim-material: gold
+        red:
+          trim-material: redstone
+        enchantments:
+          protection: 3
+        durability: 0
+  
+  thorns:
+    name: Thorns
+    material: prismarine_crystals
+    items:
+      feet:
+        id: diamond_boots
+        trim-pattern: bolt
+        yellow:
+          trim-material: gold
+        red:
+          trim-material: redstone
+        enchantments:
+          thorns: 3
+        durability: 0
+      legs:
+        id: diamond_leggings
+        trim-pattern: bolt
+        yellow:
+          trim-material: gold
+        red:
+          trim-material: redstone
+        enchantments:
+          thorns: 3
+        durability: 0
+      chest:
+        id: diamond_chestplate
+        trim-pattern: bolt
+        yellow:
+          trim-material: gold
+        red:
+          trim-material: redstone
+        enchantments:
+          thorns: 3
+        durability: 0
+      head:
+        id: diamond_helmet
+        trim-pattern: bolt
+        yellow:
+          trim-material: gold
+        red:
+          trim-material: redstone
+        enchantments:
+          thorns: 3
+        durability: 0
+  
+  pufferfish:
+    name: Pufferfish
+    material: pufferfish_bucket
+    items:
+      k1: pufferfish_spawn_egg*4
+  
+  jump_boost:
+    name: Jump Boost
+    material: slime_ball
+    items:
+      k1:
+        id: potion
+        effects:
+          jump_boost:
+            duration: 19200
+            amplifier: 1
+        potion-color: 0ac0ff
+        custom-name: Potion of Leaping II
+  
+  arrows:
+    name: Tipped Arrows
+    material: tipped_arrow
+    items:
+      k1:
+        id: tipped_arrow
+        count: 5
+        effects:
+          darkness:
+            duration: 240
+            amplifier: 3
+        potion-color: 1d1d1d
+        custom-name: Arrow of Darkness IV
+      k2:
+        id: tipped_arrow
+        count: 5
+        effects:
+          slowness:
+            duration: 240
+            amplifier: 3
+        potion-color: 4f8fcc
+        custom-name: Arrow of Slowness IV
+      k3:
+        id: tipped_arrow
+        count: 5
+        effects:
+          weakness:
+            duration: 240
+            amplifier: 0
+        potion-color: 5b1384
+        custom-name: Arrow of Weakness
+      k4:
+        id: tipped_arrow
+        count: 5
+        effects:
+          infested:
+            duration: 240
+            amplifier: 0
+        potion-color: 5e7c16
+        custom-name: Arrow of Poison
+  
+  trident:
+    name: Trident
+    material: trident
+    items:
+      k1:
+        id: trident
+        enchantments:
+          riptide: 3
+        durability: 0
+      k2: water_bucket
+      k3: water_bucket
+      k4: water_bucket
+      k5: water_bucket
+      k6: water_bucket
+      k7: water_bucket
+      k8: water_bucket
+      k9: water_bucket
+      k10: water_bucket

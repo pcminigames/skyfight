@@ -1,0 +1,179 @@
+# Nic neupravuj, pokud nevíš, co děláš.
+# Všechno, co bys mohl chtít upravit, by mělo jít spravovat pomocí příkazu "/inventory"
+
+arena-fill:
+  '1':
+    block: air
+    pos1: 31 -64 24
+    pos2: -31 99 -24
+  
+  # Red spawn platform
+  '2':
+    block: bedrock
+    pos1: -28 -1 2
+    pos2: -24 -64 -2
+  '3':
+    block: red_wool
+    pos1: -28 -1 2
+    pos2: -24 -1 -2
+  '4':
+    block: bedrock
+    pos1: -27 -1 1
+    pos2: -25 -1 -1
+  
+  # Yellow spawn platform
+  '5':
+    block: bedrock
+    pos1: 28 -1 2
+    pos2: 24 -64 -2
+  '6':
+    block: yellow_wool
+    pos1: 28 -1 2
+    pos2: 24 -1 -2
+  '7':
+    block: bedrock
+    pos1: 27 -1 1
+    pos2: 25 -1 -1
+
+inventory:
+  default:
+    axe: 0
+    planks1: 1
+    pickaxe: 2
+    bow: 3
+    k1: 4
+    pork: 5
+    gapple: 6
+    pearl: 7
+    water: 8
+    
+    sword: 27
+    flint: 18
+    arrow: 9
+    potato: 14
+    bucket: 19
+    
+    stone1: 15
+    stone2: 24
+    stone3: 33
+    planks2: 17
+    planks3: 26
+    planks4: 35
+    logs1: 16
+    logs2: 25
+    logs3: 34
+    
+    k2: 10
+    k3: 11
+    k4: 12
+    k5: 13
+    k6: 20
+    k7: 21
+    k8: 22
+    k9: 23
+    k10: 28
+    k11: 29
+    k12: 30
+    k13: 31
+    k14: 32
+    
+    feet: 36
+    legs: 37
+    chest: 38
+    head: 39
+    
+    shield: 40
+  blocks:
+    axe: 15
+    planks1: 16
+    pickaxe: 17
+    bow: 24
+    k1: 25
+    pork: 26
+    gapple: 33
+    pearl: 34
+    water: 35
+    
+    sword: 27
+    flint: 18
+    arrow: 9
+    potato: 14
+    bucket: 19
+    
+    stone1: 6
+    stone2: 7
+    stone3: 8
+    planks2: 0
+    planks3: 1
+    planks4: 2
+    logs1: 3
+    logs2: 4
+    logs3: 5
+    
+    k2: 10
+    k3: 11
+    k4: 12
+    k5: 13
+    k6: 20
+    k7: 21
+    k8: 22
+    k9: 23
+    k10: 28
+    k11: 29
+    k12: 30
+    k13: 31
+    k14: 32
+    
+    feet: 36
+    legs: 37
+    chest: 38
+    head: 39
+    
+    shield: 40
+  test:
+    slots:
+      null: 25
+      feet: 36
+      shield: 40
+      arrow: 9
+      pickaxe: 2
+      logs2: 34
+      logs3: 25
+      logs1: 16
+      k11: 10
+      bow: 3
+      k10: 20
+      pork: 5
+      k13: 12
+      planks4: 17
+      k12: 11
+      planks3: 35
+      planks2: 26
+      axe: 0
+      planks1: 1
+      k14: 13
+      head: 39
+      potato: 14
+      legs: 37
+      gapple: 6
+      pearl: 7
+      chest: 38
+      k1: 4
+      k2: 31
+      k3: 30
+      k4: 32
+      k5: 21
+      k6: 22
+      k7: 23
+      water: 8
+      k8: 28
+      k9: 29
+      bucket: 19
+      sword: 27
+      stone1: 33
+      flint: 18
+      stone2: 24
+      stone3: 15
+
+saved-inventories:
+  pythoncraft: test
