@@ -6,20 +6,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -37,13 +32,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ArmorMeta;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.inventory.meta.trim.ArmorTrim;
-import org.bukkit.inventory.meta.trim.TrimMaterial;
-import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -58,13 +47,13 @@ import skyfight.command.InventoryTabCompleter;
 import com.pythoncraft.gamelib.gui.GUIClickEvent;
 import com.pythoncraft.gamelib.gui.GUIIdentifier;
 import com.pythoncraft.gamelib.gui.GUIManager;
-import com.pythoncraft.gamelib.type.Pair;
 import com.pythoncraft.gamelib.inventory.Kit;
 import com.pythoncraft.gamelib.inventory.order.InventoryOrder;
-import com.pythoncraft.gamelib.inventory.ConditionalItem;
+import com.pythoncraft.gamelib.inventory.ItemLoader;
 import com.pythoncraft.gamelib.inventory.ItemTemplate;
 import com.pythoncraft.gamelib.BlockFill;
 import com.pythoncraft.gamelib.Chat;
+import com.pythoncraft.gamelib.GameLib;
 import com.pythoncraft.gamelib.Logger;
 
 
@@ -129,7 +118,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         put("jungle_planks", "planks4");
         put("oak_log", "logs1");
         put("spruce_log", "logs2");
-        put("birch_log", "logs3");
+        put("jungle_log", "logs3");
 
         put("red_concrete", "k1");
         put("orange_concrete", "k2");
@@ -166,19 +155,8 @@ public class PluginMain extends JavaPlugin implements Listener {
         sm = Bukkit.getScoreboardManager();
         scoreboard = sm.getMainScoreboard();
 
-        redTeam = scoreboard.getTeam("red");
-        if (redTeam == null) {
-            redTeam = scoreboard.registerNewTeam("red");
-            redTeam.setDisplayName("Red");
-            redTeam.setColor(org.bukkit.ChatColor.RED);
-        }
-
-        yellowTeam = scoreboard.getTeam("yellow");
-        if (yellowTeam == null) {
-            yellowTeam = scoreboard.registerNewTeam("yellow");
-            yellowTeam.setDisplayName("Yellow");
-            yellowTeam.setColor(org.bukkit.ChatColor.YELLOW);
-        }
+        redTeam = GameLib.createTeam("red", "RED", ChatColor.RED);
+        yellowTeam = GameLib.createTeam("yellow", "YELLOW", ChatColor.YELLOW);
 
         teams = List.of(redTeam, yellowTeam);
 
@@ -372,11 +350,10 @@ public class PluginMain extends JavaPlugin implements Listener {
 
     @EventHandler
     public void $onRespawn(PlayerRespawnEvent event) {
-        getLogger().log(Level.INFO, "Player respawned: {0}", event.getPlayer().getName());
         Player player = event.getPlayer();
 
         if (game) {
-            spectate(player);
+            GameLib.spectate(player, spectatorSpawn);
         } else {
             tpToLobby(player);
         }
@@ -387,7 +364,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
 
         if (game) {
-            spectate(player);
+            GameLib.spectate(player, spectatorSpawn);
         } else {
             tpToLobby(player);
         }
@@ -399,7 +376,6 @@ public class PluginMain extends JavaPlugin implements Listener {
         players.remove(player);
         InventoryCommand.exit(player);
     }
-
 
     public static ItemStack getMenuItem() {
         ItemStack item = new ItemStack(Material.HEART_OF_THE_SEA);
@@ -451,7 +427,6 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
     public static void tpToLobby(Player player) {
-        // player.setVelocity(player.getVelocity().setY(0));
         player.teleport(lobby);
         player.setGameMode(GameMode.ADVENTURE);
         player.setHealth(20);
@@ -461,23 +436,8 @@ public class PluginMain extends JavaPlugin implements Listener {
         player.setLevel(0);
         player.clearActivePotionEffects();
         player.getInventory().clear();
-        player.getInventory().setItem(0, getMenuItem());
-    }
 
-    public void spectate(Player player) {
-        player.sendMessage(Chat.c("§c§lYou are now spectating the game!"));
-        player.getInventory().clear();
-        player.setGameMode(GameMode.ADVENTURE);
-        player.setHealth(20);
-        player.setFoodLevel(20);
-
-        player.setGameMode(GameMode.ADVENTURE);
-
-        Bukkit.getScheduler().runTask(this, () -> {
-            player.setGameMode(GameMode.SPECTATOR);
-            player.teleport(spectatorSpawn);
-        });
-        
+        if (!game) {player.getInventory().setItem(0, getMenuItem());}
     }
 
 
@@ -581,21 +541,6 @@ public class PluginMain extends JavaPlugin implements Listener {
         loadInventoryOrders();
         loadKits();
         loadArenaFill();
-
-        Logger.info("");
-        Logger.info("");
-        Logger.info("Loaded inventory orders:");
-
-        for (String key : InventoryOrder.orders.keySet()) {
-            Logger.info(" - " + key + ": " + InventoryOrder.orders.get(key).toString());
-        }
-
-        Logger.info("");
-        Logger.info("Loaded saved inventories:");
-        for (String playerName : InventoryOrder.playerOrders.keySet()) {
-            String inventoryName = InventoryOrder.playerOrders.get(playerName);
-            Logger.info(" - " + playerName + ": " + inventoryName);
-        }
     }
 
     private void loadInventoryOrders() {
@@ -635,72 +580,31 @@ public class PluginMain extends JavaPlugin implements Listener {
             if (kitSection == null) {continue;}
 
             String name = kitSection.getString("name");
-            HashMap<String, ItemTemplate> items = new HashMap<>();
-
+            
             String materialName = kitSection.getString("material");
-            Material material = Material.STICK;
+            Material material = null;
             
             if (materialName != null) {
-                Material newMaterial = Material.getMaterial(materialName.toUpperCase());
-                if (newMaterial != null) {material = newMaterial;}
+                material = Material.getMaterial(materialName.toUpperCase());
             }
-
+            
+            if (material == null) {material = GameLib.DEFAULT_MATERIAL;}
+            
             var itemsSection = kitSection.getConfigurationSection("items");
-            if (itemsSection != null) {
-                for (String itemKey : itemsSection.getKeys(false)) {
-                    List<ConditionalItem> itemStacks = new ArrayList<>();
+            HashMap<String, ItemTemplate> items = ItemLoader.loadConditionalItemsMap(itemsSection, new HashMap<>() {{
+                put("yellow", (Player p) -> yellowTeam.hasPlayer(p));
+                put("red",    (Player p) -> redTeam.hasPlayer(p));
+            }});
 
-                    if (itemsSection.getConfigurationSection(itemKey) != null) {
-                        var singleItemSection = itemsSection.getConfigurationSection(itemKey);
-                        if (singleItemSection == null) {continue;}
-
-                        ItemStack i = loadItemSection(singleItemSection, null);
-                        itemStacks.add(new ConditionalItem(i, player -> true));
-
-                        if (singleItemSection.contains("yellow")) {
-                            ItemStack yellowItem = loadItemSection(singleItemSection.getConfigurationSection("yellow"), i);
-                            itemStacks.add(0, new ConditionalItem(yellowItem, player -> yellowTeam.hasEntity(player)));
-                        }
-
-                        if (singleItemSection.contains("red")) {
-                            ItemStack redItem = loadItemSection(singleItemSection.getConfigurationSection("red"), i);
-                            itemStacks.add(0, new ConditionalItem(redItem, player -> redTeam.hasEntity(player)));
-                        }
-                    } else {
-                        String itemName = itemsSection.getString(itemKey);
-                        if (itemName == null || itemName.isEmpty()) {continue;}
-
-                        int count = 1;
-                        if (itemName.contains("*")) {
-                            String[] parts = itemName.split("\\*");
-                            itemName = parts[0].trim();
-                            count = Integer.parseInt(parts[1].trim());
-                        }
-                        Material itemMaterial = Material.getMaterial(itemName.toUpperCase());
-                        if (itemMaterial == null) {itemMaterial = Material.STICK;}
-                        ItemStack itemStack = new ItemStack(itemMaterial);
-                        itemStack.setAmount(count);
-                        itemStacks.add(new ConditionalItem(itemStack, player -> true));
-                    }
-
-                    ItemTemplate itemTemplate = new ItemTemplate(itemStacks);
-
-                    items.put(itemKey, itemTemplate);
-                }
-            }
-
-
-            getLogger().log(Level.INFO, "Loaded kit {0} - {1} items", new Object[]{name, items.size()});
+            Logger.info("Loaded kit {0} - {1} items", name, items.size());
 
             if (kitKey.equals("default")) {
                 defaultKit = new Kit("default", material, items);
-                continue;
             } else if (kitKey.equals("showcase")) {
                 showcaseKit = new Kit("showcase", material, items);
-                continue;
+            } else {
+                kits.add(new Kit(name, material, items));
             }
-            
-            kits.add(new Kit(name, material, items));
         }
     }
 
@@ -712,141 +616,9 @@ public class PluginMain extends JavaPlugin implements Listener {
             var areaSection = fillSection.getConfigurationSection(key);
             if (areaSection == null) {continue;}
 
-            String[] pos1Parts = areaSection.getString("pos1").split(" ");
-            String[] pos2Parts = areaSection.getString("pos2").split(" ");
-
-            Location pos1 = new Location(world, Double.parseDouble(pos1Parts[0]), Double.parseDouble(pos1Parts[1]), Double.parseDouble(pos1Parts[2]));
-            Location pos2 = new Location(world, Double.parseDouble(pos2Parts[0]), Double.parseDouble(pos2Parts[1]), Double.parseDouble(pos2Parts[2]));
             Material material = Material.getMaterial(areaSection.getString("block", "air").toUpperCase());
-
-            arenaFills.add(new BlockFill(pos1, pos2, material));
+            BlockFill fill = BlockFill.fromString(areaSection.getString("pos1"), areaSection.getString("pos2"), " ", world, material);
+            arenaFills.add(fill);
         }
-    }
-
-    private ItemStack loadItemSection(ConfigurationSection itemSection, ItemStack defaultItem) {
-        if (itemSection == null) {return null;}
-
-        String itemId = itemSection.getString("id");
-        String itemName = itemSection.getString("name") != null ? itemSection.getString("name") : null;
-        Material itemMaterial = itemId != null ? Material.getMaterial(itemId.toUpperCase()) : null;
-        if (itemMaterial == null) {itemMaterial = Material.STICK;}
-        Integer count = itemSection.getInt("count", 1);
-        HashMap<String, Integer> enchants = new HashMap<>();
-        Integer durability = null;
-        TrimMaterial trimMaterial = null;
-        TrimPattern trimPattern = null;
-        List<PotionEffect> potionEffects = new ArrayList<>();
-        Color potionColor = null;
-
-        ItemStack itemStack;
-
-        if (defaultItem != null) {
-            itemStack = defaultItem.clone();
-        } else {
-            itemStack = new ItemStack(itemMaterial);
-        }
-        ItemMeta itemMeta = itemStack.getItemMeta();
-
-        if (itemName != null && !itemName.isEmpty()) {
-            itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', itemName));
-        }
-
-        var enchantments = itemSection.getConfigurationSection("enchantments");
-        if (enchantments != null) {
-            for (String enchantKey : enchantments.getKeys(false)) {
-                String enchantName = enchantKey.toUpperCase();
-                int level = enchantments.getInt(enchantKey);
-                enchants.put(enchantName, level);
-            }
-        }
-
-        if (itemSection.contains("durability")) {durability = itemSection.getInt("durability");}
-
-        if (itemSection.contains("trim-material")) {
-            String trimMaterialName = itemSection.getString("trim-material").toLowerCase();
-            trimMaterial = Registry.TRIM_MATERIAL.get(NamespacedKey.minecraft(trimMaterialName));
-        }
-
-        if (itemSection.contains("trim-pattern")) {
-            String trimPatternName = itemSection.getString("trim-pattern").toLowerCase();
-            trimPattern = Registry.TRIM_PATTERN.get(NamespacedKey.minecraft(trimPatternName));
-        }
-
-        if (itemSection.contains("effects")) {
-            var potionEffectsSection = itemSection.getConfigurationSection("effects");
-            if (potionEffectsSection != null) {
-                for (String effectKey : potionEffectsSection.getKeys(false)) {
-                    var effectSection = potionEffectsSection.getConfigurationSection(effectKey);
-                    if (effectSection == null) {continue;}
-                    
-                    String effectName = effectKey.toLowerCase();
-                    if (effectName == null || effectName.isEmpty()) {continue;}
-                    int duration = effectSection.getInt("duration", 0);
-                    int amplifier = effectSection.getInt("amplifier", 0);
-                    boolean hide = effectSection.getBoolean("hide", false);
-                    getLogger().log(Level.INFO, "    - Effect: {0} {1} for {2}t (hide: {3})", new Object[]{effectName, amplifier, duration, hide});
-
-                    PotionEffect effect = new PotionEffect(PotionEffectType.getByName(effectName), duration, amplifier, false, hide);
-                    potionEffects.add(effect);
-                }
-            }
-        }
-
-        if (itemSection.contains("potion-color")) {
-            String colorString = itemSection.getString("potion-color");
-            if (colorString != null && !colorString.isEmpty()) {
-                potionColor = Color.fromRGB(Integer.parseInt(colorString.replace("#", ""), 16));
-            }
-        }
-
-
-
-        for (String enchantment : enchants.keySet()) {
-            Enchantment enchant = Enchantment.getByName(enchantment);
-            if (enchant == null) {continue;}
-            itemMeta.addEnchant(enchant, enchants.get(enchantment), true);
-        }
-
-        if (durability != null) {
-
-            if (durability == 0) {
-                itemMeta.setUnbreakable(true);
-                itemMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-            } else if (itemMeta instanceof Damageable damageable) {
-                itemMeta.setUnbreakable(false);
-                damageable.setDamage(itemStack.getType().getMaxDurability() - durability);
-            }
-        }
-
-        if (itemMeta instanceof ArmorMeta armorMeta) {
-            if (trimPattern != null && trimMaterial != null) {
-                armorMeta.setTrim(new ArmorTrim(trimMaterial, trimPattern));
-            } else if (trimMaterial != null) {
-                ArmorTrim trim = armorMeta.getTrim();
-                TrimPattern oldPattern = TrimPattern.BOLT;
-                if (trim != null) {oldPattern = trim.getPattern();}
-                armorMeta.setTrim(new ArmorTrim(trimMaterial, oldPattern));
-            } else if (trimPattern != null) {
-                ArmorTrim trim = armorMeta.getTrim();
-                TrimMaterial oldMaterial = TrimMaterial.DIAMOND;
-                if (trim != null) {oldMaterial = trim.getMaterial();}
-                armorMeta.setTrim(new ArmorTrim(oldMaterial, trimPattern));
-            }
-        }
-
-        if (itemMeta instanceof PotionMeta potionMeta) {
-            for (PotionEffect effect : potionEffects) {
-                potionMeta.addCustomEffect(effect, true);
-            }
-
-            if (potionColor != null) {
-                potionMeta.setColor(potionColor);
-            }
-        }
-
-        itemStack.setAmount(count);
-        itemStack.setItemMeta(itemMeta);
-
-        return itemStack;
     }
 }
