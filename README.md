@@ -7,12 +7,13 @@ A Minecraft minigame where players fight above the void using selected kits.
 ## Installation
 
 1. Make sure you are running the correct version of Minecraft server (for SkyFight v4.1 it's Paper 1.21.8)
-2. Download the latest release from the [releases page](https://github.com/pcminigames/skyfight/releases). You should get a `.jar` file and two `.yml` files.
+2. Download the latest release from the [releases page](https://github.com/pcminigames/skyfight/releases). You should get a `.jar` plugin file, a `.zip` world file and two `.yml` config files.
 3. Download the [GameLib](https://github.com/pcminigames/gamelib/releases) plugin. There should be just one `.jar` file.
-4. Put both `.jar` files in your server's `plugins` folder.
-5. Make a folder named `skyfight` in your server's `plugins` folder.
-6. Put the `config.yml` and `kits.yml` files in the `skyfight` folder.
-7. Start/restart your server.
+4. Put the unzipped world folder in your server's main directory.
+5. Put both `.jar` files in your server's `plugins` folder.
+6. Make a folder named `skyfight` in your server's `plugins` folder.
+7. Put the `config.yml` and `kits.yml` files in the `skyfight` folder.
+8. Start/restart your server.
 
 ## Usage
 
