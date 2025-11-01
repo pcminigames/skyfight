@@ -27,13 +27,13 @@ public class InventoryCommand implements CommandExecutor {
             player.sendMessage(Chat.c("\n§c§lInventory Command Help:"));
             player.sendMessage(Chat.c("  §f/inventory help §7- Show this help message"));
             player.sendMessage(Chat.c("  §f/inventory list §7- List all existing inventory managements"));
-            player.sendMessage(Chat.c("  §f/inventory use <inventory>§7 - Use an existing inventory management"));
+            player.sendMessage(Chat.c("  §f/inventory use <layout>§7 - Use an existing inventory management"));
             player.sendMessage(Chat.c("  §f/inventory reset §7- Reset your inventory management to the default state"));
             player.sendMessage(Chat.c("  §f/inventory new <name>§7 - Create a new inventory management with the given name"));
             player.sendMessage(Chat.c("  §f/inventory submit §7- Submit your current inventory management"));
             player.sendMessage(Chat.c("  §f/inventory exit §7- Exit the inventory management creation mode or trial mode"));
-            player.sendMessage(Chat.c("  §f/inventory try <inventory>§7 - Try an existing inventory management without saving it as your preferred one"));
-            player.sendMessage(Chat.c("  §f/inventory remove <inventory>§7 - Remove an existing inventory management"));
+            player.sendMessage(Chat.c("  §f/inventory try <layout>§7 - Try an existing inventory management without saving it as your preferred one"));
+            player.sendMessage(Chat.c("  §f/inventory remove <layout>§7 - Remove an existing inventory management"));
 
             return true;
         }

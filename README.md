@@ -22,6 +22,19 @@ A Minecraft minigame where players fight above the void using selected kits.
 4. When all of the online players have chosen a team and kit, the game will start automatically.
 5. The game ends when one team has no players left alive.
 
+### Inventory layout
+
+The inventory layout can be customized using the `/inventory` command:
+- `/inventory help` - Shows the help message.
+- `/inventory list` - Lists all available inventory layouts.
+- `/inventory use <layout_id>` - Saves the specified layout as your preferred inventory layout. This won't change until the player uses this command again.
+- `/inventory try <layout_id>` - Gives the player the items defined in the specified layout, so they can try it out, but does not save it as the preferred layout.
+- `/inventory reset` - Resets the player's preferred inventory layout to the default layout.
+- `/inventory new <layout_id>` - Creates a new inventory layout with the specified id. Puts the player in layout creation mode, where they can modify their inventory to create the layout.
+- `/inventory submit` - Submits the current inventory as a new layout. Only works if the player is in layout creation mode.
+- `/inventory exit` - Exits the layout creation or trial mode without saving any changes.
+- `/inventory remove <layout_id>` - Removes the specified inventory layout.
+
 ## Notes
 
 - Make sure to try out other [pythoncraft's minigames](https://github.com/orgs/pcminigames/repositories)
@@ -48,8 +61,9 @@ A Minecraft minigame where players fight above the void using selected kits.
 
 1. Short notation
     - Is used for simple items without any special properties.
-    - `'<id>': <item_name>` - Gives one of the specified item.
-    - `'<id>': <item_name>*<count>` - Gives a specified number of the item. `<count>` must be a positive integer, but can be greater 64.
+      - `<slot>: <item_name>` - Gives one of the specified item.
+      - `<slot>: <item_name>*<count>` - Gives a specified number of the item. `<count>` must be a positive integer, but can be greater 64.
+    - `<slot>` - The inventory slot where the item will be placed. Slots are defined in the inventory layout in `config.yml`.
     - Example:
 
       ```yaml
