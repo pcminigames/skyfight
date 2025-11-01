@@ -176,4 +176,4 @@ inventory:
       stone3: 15
 
 saved-inventories:
-  pythoncraft: test
+  pythoncraft: default

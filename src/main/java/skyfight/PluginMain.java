@@ -228,6 +228,11 @@ public class PluginMain extends JavaPlugin implements Listener {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("kit")) {
+            if (game) {
+                sender.sendMessage("§c§lYou cannot open the kit menu while a game is in progress!");
+                return true;
+            }
+
             Player player = (Player) sender;
 
             if (redTeam.hasEntity(player) || yellowTeam.hasEntity(player)) {
@@ -484,7 +489,7 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
     public void createInventory(Player player, HashMap<Integer, String> items, String name) {
-        InventoryOrder order = new InventoryOrder();
+        InventoryOrder order = new InventoryOrder(name);
 
         for (int slot : items.keySet()) {
             order.addSlot(slotNames.get(items.get(slot).toLowerCase()), slot);
@@ -548,7 +553,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         if (inventorySection == null) {return;}
         
         for (String invKey : inventorySection.getKeys(false)) {
-            InventoryOrder order = new InventoryOrder();
+            InventoryOrder order = new InventoryOrder(invKey);
 
             var invSection = inventorySection.getConfigurationSection(invKey);
             if (invSection == null) {continue;}
