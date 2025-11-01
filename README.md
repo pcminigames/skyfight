@@ -2,7 +2,7 @@
 
 A Minecraft minigame where players fight above the void using selected kits.
 
-** Requires [pythoncraft's GameLib](https://github.com/pcminigames/gamelib) plugin to run. **
+**Requires [pythoncraft's GameLib](https://github.com/pcminigames/gamelib) plugin to run.**
 
 ## Installation
 
