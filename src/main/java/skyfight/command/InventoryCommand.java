@@ -1,7 +1,6 @@
 package skyfight.command;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,13 +9,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import com.pythoncraft.gamelib.Chat;
-import com.pythoncraft.gamelib.inventory.order.InventoryOrder;
+import com.pythoncraft.gamelib.inventory.InventoryLayout;
 
 import skyfight.PluginMain;
 
 public class InventoryCommand implements CommandExecutor {
-    public static HashSet<Player> creatingPlayers = new HashSet<>();
-    public static HashMap<Player, String> inventoryNames = new HashMap<>();
+    public static HashMap<Player, String> creatingModePlayers = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
@@ -39,21 +37,21 @@ public class InventoryCommand implements CommandExecutor {
         }
 
         if (args[0].equalsIgnoreCase("list")) {
-            player.sendMessage(Chat.c("\n§c§lExisting Inventory Managements:"));
-            player.sendMessage(Chat.c(" §7") + String.join(", ", InventoryOrder.orders.keySet()));
+            player.sendMessage(Chat.c("\n§c§lExisting inventory layouts:"));
+            player.sendMessage(Chat.c(" §7") + String.join(", ", InventoryLayout.layouts.keySet()));
             return true;
         }
 
         if (args[0].equalsIgnoreCase("use")) {
             if (args.length == 1) {return false;}
 
-            String inventoryName = args[1];
-            if (!InventoryOrder.orders.containsKey(inventoryName)) {
-                player.sendMessage(Chat.c("\n§c§lInventory \"" + inventoryName + "\" not found."));
+            String layoutName = args[1];
+            if (!InventoryLayout.layouts.containsKey(layoutName)) {
+                player.sendMessage(Chat.c("\n§c§lInventory layout \"" + layoutName + "\" not found."));
                 return true;
             }
 
-            PluginMain.getInstance().useInventory(player, inventoryName);
+            PluginMain.getInstance().useLayout(player, layoutName);
             return true;
         }
 
@@ -63,13 +61,13 @@ public class InventoryCommand implements CommandExecutor {
                 return true;
             }
 
-            String inventoryName = args[1];
-            if (!InventoryOrder.orders.containsKey(inventoryName)) {
-                player.sendMessage(Chat.c("\n§c§lInventory \"" + inventoryName + "\" not found."));
+            String layoutName = args[1];
+            if (!InventoryLayout.layouts.containsKey(layoutName)) {
+                player.sendMessage(Chat.c("\n§c§lInventory layout \"" + layoutName + "\" not found."));
                 return true;
             }
 
-            PluginMain.getInstance().tryInventory(player, inventoryName);
+            PluginMain.getInstance().tryLayout(player, layoutName);
             return true;
         }
 
@@ -78,8 +76,8 @@ public class InventoryCommand implements CommandExecutor {
         }
 
         if (args[0].equalsIgnoreCase("reset")) {
-            PluginMain.getInstance().useInventory(player, "default");
-            player.sendMessage(Chat.c("\n§a§lYour inventory management has been reset to the default state."));
+            PluginMain.getInstance().useLayout(player, "default");
+            player.sendMessage(Chat.c("\n§a§lYour inventory layout has been reset to the default state."));
             return true;
         }
 
@@ -89,29 +87,29 @@ public class InventoryCommand implements CommandExecutor {
                 return true;
             }
             
-            String inventoryName = args[1];
-            if (InventoryOrder.orders.containsKey(inventoryName)) {
-                player.sendMessage(Chat.c("\n§c§lInventory \"" + inventoryName + "\" already exists."));
+            String layoutName = args[1];
+            if (InventoryLayout.layouts.containsKey(layoutName)) {
+                player.sendMessage(Chat.c("\n§c§lInventory layout \"" + layoutName + "\" already exists."));
                 return true;
             }
 
-            inventoryNames.put(player, inventoryName);
-            creatingPlayers.add(player);
+            creatingModePlayers.put(player, layoutName);
 
-            player.sendMessage(Chat.c("\n§a§lHow to create a new inventory management:"));
+            player.sendMessage(Chat.c("\n§a§lHow to create a new inventory layout:"));
             player.sendMessage(Chat.c("1. §7Order the items in your inventory as you want them to be saved. Try not to throw some items out of your inventory. The concrete blocks will be replaced with some items from your chosen kit. The items from the kit will be filled in this order: §c█§6█§e█§a█§2█§3█§b█§1█§9█§5█§d█§f█§7█§0█"));
-            player.sendMessage(Chat.c("2. §7Use §f/inventory submit§7 to save your inventory management or §f/inventory exit§7 to discard it."));
-            player.sendMessage(Chat.c("3. §7Use §f/inventory use " + inventoryName + " §7to apply it as your preferred inventory management."));
-            PluginMain.getInstance().tryInventory(player, "default");
+            player.sendMessage(Chat.c("2. §7Use §f/inventory submit§7 to save your inventory layout or §f/inventory exit§7 to discard it."));
+            PluginMain.getInstance().tryLayout(player, "default");
 
             return true;
         }
 
         if (args[0].equalsIgnoreCase("submit")) {
-            if (!creatingPlayers.contains(player)) {
-                player.sendMessage(Chat.c("\n§c§lYou are not in the inventory creation mode."));
+            if (!creatingModePlayers.containsKey(player)) {
+                player.sendMessage(Chat.c("\n§c§lYou are not in the inventory layout creation mode."));
                 return true;
             }
+
+            String layoutName = creatingModePlayers.get(player);
 
             HashMap<Integer, String> items = new HashMap<>();
             for (int i = 0; i < player.getInventory().getSize(); i++) {
@@ -120,15 +118,17 @@ public class InventoryCommand implements CommandExecutor {
                 }
             }
 
-            PluginMain.getInstance().createInventory(player, items, inventoryNames.get(player));
-            inventoryNames.remove(player);
+            PluginMain.getInstance().createLayout(player, items, layoutName);
+            creatingModePlayers.remove(player);
             exit(player);
+
+            PluginMain.getInstance().useLayout(player, layoutName);
             return true;
         }
 
         if (args[0].equalsIgnoreCase("remove")) {
             if (!player.hasPermission("skyfight.inventory.remove")) {
-                player.sendMessage(Chat.c("\n§c§lYou do not have permission to remove inventory managements."));
+                player.sendMessage(Chat.c("\n§c§lYou do not have permission to remove inventory layouts."));
                 return true;
             }
             
@@ -137,13 +137,27 @@ public class InventoryCommand implements CommandExecutor {
                 return true;
             }
 
-            String inventoryName = args[1];
-            if (!InventoryOrder.orders.containsKey(inventoryName)) {
-                player.sendMessage(Chat.c("\n§c§lInventory \"" + inventoryName + "\" not found."));
+            String layoutName = args[1];
+            if (!InventoryLayout.layouts.containsKey(layoutName)) {
+                player.sendMessage(Chat.c("\n§c§lInventory layout \"" + layoutName + "\" not found."));
                 return true;
             }
 
-            PluginMain.getInstance().removeInventory(inventoryName);
+            PluginMain.getInstance().removeLayout(layoutName);
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("players")) {
+            if (!player.hasPermission("skyfight.inventory.players")) {
+                player.sendMessage(Chat.c("\n§c§lYou do not have permission to view players' inventory layouts."));
+                return true;
+            }
+
+            player.sendMessage(Chat.c("\n§c§lPlayer inventory layouts:"));
+            for (String playerName : InventoryLayout.playerLayouts.keySet()) {
+                String layoutName = InventoryLayout.playerLayouts.get(playerName);
+                player.sendMessage(Chat.c(" §7" + playerName + " §f- §a" + layoutName));
+            }
             return true;
         }
 
@@ -151,8 +165,8 @@ public class InventoryCommand implements CommandExecutor {
     }
 
     public static void exit(Player player) {
-        if (creatingPlayers.contains(player)) {
-            creatingPlayers.remove(player);
+        if (creatingModePlayers.containsKey(player)) {
+            creatingModePlayers.remove(player);
         }
 
         Inventory i = player.getInventory();

@@ -110,16 +110,16 @@ kits:
       
       feet:
         id: diamond_boots
-        durability: 0effects
+        durability: 0
       legs:
         id: diamond_leggings
-        durability: 0effects
+        durability: 0
       chest:
         id: diamond_chestplate
-        durability: 0effects
+        durability: 0
       head:
         id: diamond_helmet
-        durability: 0effects
+        durability: 0
       shield:
         id: shield
         durability: 0
@@ -375,6 +375,7 @@ kits:
             amplifier: 3
         potion-color: 6f6186
         custom-name: Potion of Slow Falling IV
+  
   troll:
     name: Troll
     material: poisonous_potato

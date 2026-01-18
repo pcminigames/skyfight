@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import com.pythoncraft.gamelib.inventory.order.InventoryOrder;
+import com.pythoncraft.gamelib.inventory.InventoryLayout;
 
 public class InventoryTabCompleter implements TabCompleter {
 
@@ -19,11 +19,11 @@ public class InventoryTabCompleter implements TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         switch (args.length) {
             case 1 -> {
-                return Arrays.asList("help", "list", "use", "reset", "new", "submit", "try", "exit", "remove");
+                return Arrays.asList("help", "list", "use", "reset", "new", "submit", "try", "exit", "remove", "players");
             }
             case 2 -> {
                 if (args[0].equalsIgnoreCase("use") || args[0].equalsIgnoreCase("try") || args[0].equalsIgnoreCase("remove")) {
-                    return InventoryOrder.orders.keySet().stream().toList();
+                    return InventoryLayout.layouts.keySet().stream().toList();
                 }
             }
             default -> {

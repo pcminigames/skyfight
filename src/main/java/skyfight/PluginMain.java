@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -48,13 +47,17 @@ import com.pythoncraft.gamelib.gui.GUIClickEvent;
 import com.pythoncraft.gamelib.gui.GUIIdentifier;
 import com.pythoncraft.gamelib.gui.GUIManager;
 import com.pythoncraft.gamelib.inventory.Kit;
-import com.pythoncraft.gamelib.inventory.order.InventoryOrder;
+import com.pythoncraft.gamelib.inventory.InventoryLayout;
+
+import net.kyori.adventure.text.format.NamedTextColor;
+
 import com.pythoncraft.gamelib.inventory.ItemLoader;
 import com.pythoncraft.gamelib.inventory.ItemTemplate;
 import com.pythoncraft.gamelib.BlockFill;
 import com.pythoncraft.gamelib.Chat;
 import com.pythoncraft.gamelib.GameLib;
 import com.pythoncraft.gamelib.Logger;
+import com.pythoncraft.gamelib.PlayerActions;
 
 
 public class PluginMain extends JavaPlugin implements Listener {
@@ -64,77 +67,33 @@ public class PluginMain extends JavaPlugin implements Listener {
 
     private File configFile;
     private FileConfiguration config;
-    public File kitFile;
-    public FileConfiguration kitConfig;
+    private File kitFile;
+    private FileConfiguration kitConfig;
+    private File layoutsFile;
+    private FileConfiguration layoutsConfig;
 
-    public static List<Kit> kits = new ArrayList<>();
-    public static Kit defaultKit = new Kit("default", Material.STICK, new HashMap<>());
-    public static Kit showcaseKit = new Kit("showcase", Material.STICK, new HashMap<>());
+    public List<Kit> kits = new ArrayList<>();
+    public Kit defaultKit;
+    public Kit showcaseKit;
+    public HashMap<String, String> kitPlaceholders = new HashMap<>();
 
-    public static List<BlockFill> arenaFills = new ArrayList<>();
-    public static World world;
+    public List<BlockFill> arenaFills = new ArrayList<>();
+    public World world;
 
-    public static ScoreboardManager sm;
-    public static Scoreboard scoreboard;
+    public ScoreboardManager sm;
+    public Scoreboard scoreboard;
 
-    public static Team redTeam;
-    public static Team yellowTeam;
-    public static List<Team> teams;
+    public Team redTeam;
+    public Team yellowTeam;
+    public List<Team> teams = new ArrayList<>();
+    public Location redSpawn;
+    public Location yellowSpawn;
+    public List<Location> spawnPoints = new ArrayList<>();
+    public Location lobby;
+    public Location spectatorSpawn;
 
-    public static Location redSpawn;
-    public static Location yellowSpawn;
-    public static List<Location> spawnPoints;
-    public static Location lobby;
-    public static Location spectatorSpawn;
-
-    public static boolean game = false;
-    public static HashSet<Player> players = new HashSet<>();
-
-    public static HashMap<String, String> slotNames = new HashMap<String, String>() {{
-        put("iron_axe", "axe");
-        put("iron_pickaxe", "pickaxe");
-        put("iron_sword", "sword");
-        put("diamond_helmet", "head");
-        put("diamond_chestplate", "chest");
-        put("diamond_leggings", "legs");
-        put("diamond_boots", "feet");
-        put("shield", "shield");
-        put("stick", "bow");
-        put("arrow", "arrow");
-        put("flint_and_steel", "flint");
-        put("bucket", "bucket");
-        put("water_bucket", "water");
-        put("snowball", "pearl");
-        put("golden_apple", "gapple");
-        put("cooked_porkchop", "pork");
-        put("baked_potato", "potato");
-
-        put("smooth_stone", "stone1");
-        put("stone", "stone2");
-        put("cobblestone", "stone3");
-        put("oak_planks", "planks1");
-        put("spruce_planks", "planks2");
-        put("birch_planks", "planks3");
-        put("jungle_planks", "planks4");
-        put("oak_log", "logs1");
-        put("spruce_log", "logs2");
-        put("jungle_log", "logs3");
-
-        put("red_concrete", "k1");
-        put("orange_concrete", "k2");
-        put("yellow_concrete", "k3");
-        put("lime_concrete", "k4");
-        put("green_concrete", "k5");
-        put("cyan_concrete", "k6");
-        put("light_blue_concrete", "k7");
-        put("blue_concrete", "k8");
-        put("purple_concrete", "k9");
-        put("magenta_concrete", "k10");
-        put("pink_concrete", "k11");
-        put("white_concrete", "k12");
-        put("gray_concrete", "k13");
-        put("black_concrete", "k14");
-    }};
+    public boolean isGame = false;
+    public HashSet<Player> playersInGame = new HashSet<>();
 
     @Override
     public void onEnable() {
@@ -142,43 +101,45 @@ public class PluginMain extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getPluginManager().registerEvents(GUIManager.getInstance(), this);
 
-        this.configFile = new File(getDataFolder(), "config.yml");
-        this.config = YamlConfiguration.loadConfiguration(this.configFile);
-        this.kitFile = new File(getDataFolder(), "kits.yml");
-        this.kitConfig = YamlConfiguration.loadConfiguration(this.kitFile);
+        this.configFile  = new File(getDataFolder(), "config.yml");
+        this.config        = YamlConfiguration.loadConfiguration(this.configFile);
+        this.kitFile     = new File(getDataFolder(), "kits.yml");
+        this.kitConfig     = YamlConfiguration.loadConfiguration(this.kitFile);
+        this.layoutsFile = new File(getDataFolder(), "layouts.yml");
+        this.layoutsConfig = YamlConfiguration.loadConfiguration(this.layoutsFile);
 
-        world = Bukkit.getWorld("world");
+        this.world = Bukkit.getWorld("world");
 
         try {config.save(this.configFile);} catch (IOException e) {e.printStackTrace();}
         try {kitConfig.save(this.kitFile);} catch (IOException e) {e.printStackTrace();}
 
-        sm = Bukkit.getScoreboardManager();
-        scoreboard = sm.getMainScoreboard();
+        this.sm = Bukkit.getScoreboardManager();
+        this.scoreboard = sm.getMainScoreboard();
 
-        redTeam = GameLib.createTeam("red", "RED", ChatColor.RED);
-        yellowTeam = GameLib.createTeam("yellow", "YELLOW", ChatColor.YELLOW);
+        this.redTeam = GameLib.createTeam("red", "RED", NamedTextColor.RED);
+        this.yellowTeam = GameLib.createTeam("yellow", "YELLOW", NamedTextColor.YELLOW);
+        this.teams = List.of(redTeam, yellowTeam);
 
-        teams = List.of(redTeam, yellowTeam);
-
-        redSpawn    = new Location(Bukkit.getWorld("world"), -26, 0, 0, -90, 0).add(0.5, 0, 0.5);
-        yellowSpawn = new Location(Bukkit.getWorld("world"),  26, 0, 0, +90, 0).add(0.5, 0, 0.5);
-        spawnPoints = List.of(redSpawn, yellowSpawn);
-        lobby = new Location(Bukkit.getWorld("world"), 0, 122, 0).add(0.5, 0, 0.5);
-        spectatorSpawn = new Location(Bukkit.getWorld("world"), 0, 60, 0).add(0.5, 0, 0.5);
+        // TODO: From config
+        this.redSpawn       = new Location(Bukkit.getWorld("world"), -26, 0, 0, -90, 0).add(0.5, 0, 0.5);
+        this.yellowSpawn    = new Location(Bukkit.getWorld("world"),  26, 0, 0, +90, 0).add(0.5, 0, 0.5);
+        this.spawnPoints    = List.of(redSpawn, yellowSpawn);
+        this.lobby          = new Location(Bukkit.getWorld("world"), 0, 122, 0).add(0.5, 0, 0.5);
+        this.spectatorSpawn = new Location(Bukkit.getWorld("world"), 0, 60, 0).add(0.5, 0, 0.5);
 
         this.loadConfig();
 
         GUIManager.getInstance().register("team", true, guiPlayer -> {
-            Inventory inventory = Bukkit.createInventory(new GUIIdentifier("team"), 27, Chat.c("§lSelect Team"));
+            Inventory inventory = Bukkit.createInventory(new GUIIdentifier("team"), 27, Chat.component("§lSelect Team"));
 
             ItemStack red = new ItemStack(Material.RED_WOOL);
             ItemMeta redMeta = red.getItemMeta();
-            redMeta.setDisplayName(Chat.c("§c§lRed Team"));
+            redMeta.displayName(Chat.component("§c§lRed Team"));
             red.setItemMeta(redMeta);
 
             ItemStack yellow = new ItemStack(Material.YELLOW_WOOL);
             ItemMeta yellowMeta = yellow.getItemMeta();
-            yellowMeta.setDisplayName(Chat.c("§e§lYellow Team"));
+            yellowMeta.displayName(Chat.component("§e§lYellow Team"));
             yellow.setItemMeta(yellowMeta);
 
             inventory.setItem(11, red);
@@ -188,18 +149,16 @@ public class PluginMain extends JavaPlugin implements Listener {
         });
 
         GUIManager.getInstance().register("kit", true, guiPlayer -> {
-            Inventory inventory = Bukkit.createInventory(new GUIIdentifier("kit"), 54, Chat.c("§lSelect Kit"));
+            Inventory inventory = Bukkit.createInventory(new GUIIdentifier("kit"), 54, Chat.component("§lSelect Kit"));
 
             int slot = 0;
             for (Kit kit : kits) {
-                if ("default".equals(kit.displayName)) {continue;}
-                
                 Material kitMaterial = kit.material != null ? kit.material : Material.STICK;
                 ItemStack item = new ItemStack(kitMaterial);
                 ItemMeta meta = item.getItemMeta();
 
                 if (meta != null) {
-                    meta.setDisplayName(kit.displayName);
+                    meta.displayName(Chat.component(kit.displayName));
                     meta.setAttributeModifiers(MultimapBuilder.hashKeys().hashSetValues().build());
                     meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
                     item.setItemMeta(meta);
@@ -211,7 +170,7 @@ public class PluginMain extends JavaPlugin implements Listener {
 
             ItemStack barrier = new ItemStack(Material.BARRIER);
             ItemMeta barrierMeta = barrier.getItemMeta();
-            barrierMeta.setDisplayName(Chat.c("§c§lBack to team selection"));
+            barrierMeta.displayName(Chat.component("§c§lBack to team selection"));
             barrier.setItemMeta(barrierMeta);
             inventory.setItem(53, barrier);
 
@@ -223,12 +182,15 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
     @Override
-    public void onDisable() {}
+    public void onDisable() {
+        this.playersInGame.clear();
+        this.isGame = false;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("kit")) {
-            if (game) {
+            if (isGame) {
                 sender.sendMessage("§c§lYou cannot open the kit menu while a game is in progress!");
                 return true;
             }
@@ -254,16 +216,16 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-	public void $onGuiClick(GUIClickEvent guiClickEvent) {
+	public void onGuiClick(GUIClickEvent guiClickEvent) {
         InventoryClickEvent inventoryClickEvent = guiClickEvent.getInventoryClickEvent();
         int slot = inventoryClickEvent.getSlot();
         Player player = (Player) inventoryClickEvent.getWhoClicked();
 
 		if (guiClickEvent.getID().equals("team")) {
-            if (slot == 11) {
-                if (!redTeam.hasEntity(player)) {redTeam.addEntity(player);}
-            } else if (slot == 15) {
-                if (!yellowTeam.hasEntity(player)) {yellowTeam.addEntity(player);}
+            if (slot == 11 && !redTeam.hasEntity(player)) {
+                redTeam.addEntity(player);
+            } else if (slot == 15 && !yellowTeam.hasEntity(player)) {
+                yellowTeam.addEntity(player);
             }
 
             if (slot == 11 || slot == 15) {
@@ -290,7 +252,7 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void $onRightClick(PlayerInteractEvent event) {
+    public void onRightClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
 
@@ -304,42 +266,42 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void $onPlayerHit(EntityDamageByEntityEvent event) {
+    public void onPlayerHit(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player)) {return;}
 
-        if (!game) {event.setCancelled(true);}
+        if (!this.isGame) {event.setCancelled(true);}
     }
 
     @EventHandler
-    public void $onDeath(PlayerDeathEvent event) {
+    public void onDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
 
-        if (players.contains(player)) {players.remove(player);}
+        if (this.playersInGame.contains(player)) {this.playersInGame.remove(player);}
 
         boolean hasYellow = false;
         boolean hasRed = false;
 
-        for (Player p : players) {
+        for (Player p : this.playersInGame) {
             if (yellowTeam.hasEntity(p)) {hasYellow = true;}
             if (redTeam.hasEntity(p)) {hasRed = true;}
         }
 
         // Needed to pass these variables to the Bukkit scheduler function
-        boolean hasYellowFinal = hasYellow;
-        boolean hasRedFinal = hasRed;
+        final boolean hasYellowFinal = hasYellow;
+        final boolean hasRedFinal = hasRed;
 
         if (!hasYellow || !hasRed) {
             // End the game if one team is eliminated
-            game = false;
+            this.isGame = false;
 
             Bukkit.getScheduler().runTask(this, () -> {
-                Bukkit.broadcastMessage(Chat.c("§lGame Over!"));
+                Chat.broadcast("§lGame Over!");
                 if (hasRedFinal && !hasYellowFinal) {
-                    Bukkit.broadcastMessage(Chat.c("§c§lRed Team§r wins!"));
+                    Chat.broadcast("§c§lRed Team§r wins!");
                 } else if (hasYellowFinal && !hasRedFinal) {
-                    Bukkit.broadcastMessage(Chat.c("§e§lYellow Team§r wins!"));
+                    Chat.broadcast("§e§lYellow Team§r wins!");
                 } else if (!hasRedFinal && !hasYellowFinal) {
-                    Bukkit.broadcastMessage(Chat.c("§a§lNo one wins!§r"));
+                    Chat.broadcast("§a§lNo one wins!§r");
                 }
             });
 
@@ -348,37 +310,37 @@ public class PluginMain extends JavaPlugin implements Listener {
                 tpToLobby(p);
             }
 
-            players.clear();
+            this.playersInGame.clear();
             clearArena();
         }
     }
 
     @EventHandler
-    public void $onRespawn(PlayerRespawnEvent event) {
+    public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
 
-        if (game) {
-            GameLib.spectate(player, spectatorSpawn);
+        if (this.isGame) {
+            GameLib.spectate(player, this.spectatorSpawn);
         } else {
             tpToLobby(player);
         }
     }
 
     @EventHandler
-    public void $onJoin(PlayerJoinEvent event) {
+    public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        if (game) {
-            GameLib.spectate(player, spectatorSpawn);
+        if (this.isGame) {
+            GameLib.spectate(player, this.spectatorSpawn);
         } else {
             tpToLobby(player);
         }
     }
 
     @EventHandler
-    public void $onQuit(PlayerQuitEvent event) {
+    public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        players.remove(player);
+        this.playersInGame.remove(player);
         InventoryCommand.exit(player);
     }
 
@@ -386,8 +348,8 @@ public class PluginMain extends JavaPlugin implements Listener {
         ItemStack item = new ItemStack(Material.HEART_OF_THE_SEA);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(Chat.c("§b§lSkyFight Menu"));
-            meta.setLore(List.of(Chat.c("§7Right click to open the menu")));
+            meta.displayName(Chat.component("§b§lSkyFight Menu"));
+            meta.lore(List.of(Chat.component("§7Right click to open the menu")));
             meta.addEnchant(Enchantment.VANISHING_CURSE, 1, true);
             item.setItemMeta(meta);
         }
@@ -395,137 +357,131 @@ public class PluginMain extends JavaPlugin implements Listener {
     }
 
 
-    public static void playerStart(Player player, Kit kit) {
-        Team team = scoreboard.getEntityTeam(player);
+    public void playerStart(Player player, Kit kit) {
+        Team team = this.scoreboard.getEntityTeam(player);
 
-        player.getInventory().clear();
-        defaultKit.give(player);
+        PlayerActions.setupPlayerReset(List.of(
+            new PotionEffect(PotionEffectType.SATURATION, 50, 0, false, false),
+            new PotionEffect(PotionEffectType.NIGHT_VISION, -1, 0, false, false)
+        )).accept(player, playersInGame);
+
+        player.setGameMode(GameMode.ADVENTURE);
+
+        this.defaultKit.give(player);
         kit.give(player);
         player.closeInventory();
 
-        player.setHealth(20);
-        player.setFoodLevel(20);
-        player.setSaturation(20);
-        player.setExp(0);
-        player.setLevel(0);
-        player.clearActivePotionEffects();
+        player.teleport(this.spawnPoints.get(teams.indexOf(team)));
 
-        player.teleport(spawnPoints.get(teams.indexOf(team)));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 5 * 10, 0, false, false));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 999999999, 0, false, false));
+        if (!this.playersInGame.contains(player)) {this.playersInGame.add(player);}
 
-        // player.setGameMode(GameMode.SURVIVAL);
-        if (!players.contains(player)) {players.add(player);}
-
-        if (players.size() == Bukkit.getOnlinePlayers().size()) {
-            startGame();
+        if (this.playersInGame.size() == Bukkit.getOnlinePlayers().size()) {
+            this.startGame();
         }
     }
 
-    public static void startGame() {
-        game = true;
-        Bukkit.broadcastMessage(Chat.c("\n§lGame started!"));
+    public void startGame() {
+        if (this.isGame) {return;}
 
-        for (Player player : players) {
+        this.isGame = true;
+        Chat.broadcast("\n§lGame started!");
+
+        for (Player player : this.playersInGame) {
             player.setGameMode(GameMode.SURVIVAL);
         }
     }
 
-    public static void tpToLobby(Player player) {
-        player.teleport(lobby);
-        player.setGameMode(GameMode.ADVENTURE);
-        player.setHealth(20);
-        player.setFoodLevel(20);
-        player.setSaturation(20);
-        player.setExp(0);
-        player.setLevel(0);
-        player.clearActivePotionEffects();
+    public void tpToLobby(Player player) {
+        PlayerActions.setupPlayerReset(null).accept(player, playersInGame);
         player.getInventory().clear();
+        player.setGameMode(GameMode.ADVENTURE);
+        player.teleport(this.lobby);
 
-        if (!game) {player.getInventory().setItem(0, getMenuItem());}
+        if (!this.isGame) {player.getInventory().setItem(0, getMenuItem());}
     }
 
 
-    public void useInventory(Player player, String inventoryName) {
-        InventoryOrder inventory = InventoryOrder.orders.get(inventoryName);
+    public void useLayout(Player player, String layoutName) {
+        InventoryLayout inventory = InventoryLayout.layouts.get(layoutName);
         if (inventory == null) {
-            player.sendMessage(Chat.c("§c§lInventory \"" + inventoryName + "\" not found!"));
+            Chat.message(player, "§c§lInventory layout \"" + layoutName + "\" not found!");
             return;
         }
 
-        InventoryOrder.playerOrders.put(player.getName(), inventoryName);
-
+        InventoryLayout.playerLayouts.put(player.getName(), layoutName);
         try {
-            config.set("saved-inventories." + player.getName(), inventoryName);
+            config.set("saved-layouts." + player.getName(), layoutName);
             config.save(configFile);
         } catch (IOException e) {
             e.printStackTrace();
-            player.sendMessage(Chat.c("§c§lFailed to save inventory!"));
+            player.sendMessage(Chat.c("§c§lFailed to save inventory layout!"));
             return;
         }
 
-        player.sendMessage(Chat.c("Inventory successfully updated to §a§l" + inventoryName + "§r."));
+        player.sendMessage(Chat.c("Inventory layout successfully updated to §a§l" + layoutName + "§r."));
     }
 
-    public void tryInventory(Player player, String inventoryName) {
-        if (game || players.contains(player)) {
-            player.sendMessage(Chat.c("§c§lYou cannot try an inventory while a game is in progress!"));
+    public void tryLayout(Player player, String layoutName) {
+        if (isGame || this.playersInGame.contains(player)) {
+            player.sendMessage(Chat.c("§c§lYou cannot try an inventory layout while a game is in progress!"));
             return;
         }
 
-        InventoryOrder inventory = InventoryOrder.orders.get(inventoryName);
-        if (inventory == null) {
-            player.sendMessage(Chat.c("§c§lInventory \"" + inventoryName + "\" not found!"));
+        InventoryLayout layout = InventoryLayout.layouts.get(layoutName);
+        if (layout == null) {
+            player.sendMessage(Chat.c("§c§lInventory layout \"" + layoutName + "\" not found!"));
             return;
         }
 
-        applyInventory(player, inventory);
+        this.applyLayout(player, layout);
     }
 
-    public void applyInventory(Player player, InventoryOrder inventory) {
+    public void applyLayout(Player player, InventoryLayout layout) {
         player.getInventory().clear();
-        defaultKit.give(player, inventory);
-        showcaseKit.give(player, inventory);
+        this.defaultKit.give(player, layout);
+        this.showcaseKit.give(player, layout);
     }
 
-    public void createInventory(Player player, HashMap<Integer, String> items, String name) {
-        InventoryOrder order = new InventoryOrder(name);
+    public void createLayout(Player player, HashMap<Integer, String> items, String name) {
+        InventoryLayout layout = new InventoryLayout(name);
 
         for (int slot : items.keySet()) {
-            order.addSlot(slotNames.get(items.get(slot).toLowerCase()), slot);
+            String slotItem = items.get(slot).toLowerCase();
+            layout.mapSlot(this.kitPlaceholders.get(slotItem), slot);
         }
 
-        InventoryOrder.orders.put(name, order);
-        InventoryOrder.playerOrders.put(player.getName(), name);
+        InventoryLayout.layouts.put(name, layout);
+        InventoryLayout.playerLayouts.put(player.getName(), name);
 
         try {
-            config.set("inventory." + name, order);
-            config.save(configFile);
+            this.layoutsConfig.set("layouts." + name, layout.slots);
+            this.layoutsConfig.save(this.layoutsFile);
         } catch (IOException e) {
             e.printStackTrace();
-            player.sendMessage(Chat.c("§c§lFailed to create inventory!"));
+            Chat.message(player, "§c§lFailed to create inventory layout!");
             return;
-        } finally {
-            // InventoryCommand.exit(player);
         }
 
-        player.sendMessage(Chat.c("Inventory §a§l\"" + name + "\"§r created successfully!"));
+        player.sendMessage(Chat.c("Inventory layout §a§l\"" + name + "\"§r created successfully!"));
     }
 
-    public void removeInventory(String name) {
-        InventoryOrder.orders.remove(name);
-        InventoryOrder.playerOrders.values().removeIf(value -> value.equals(name));
+    public void removeLayout(String name) {
+        InventoryLayout.layouts.remove(name);
 
-        for (String playerName : InventoryOrder.playerOrders.keySet()) {
-            if (InventoryOrder.playerOrders.get(playerName).equals(name)) {
-                InventoryOrder.playerOrders.put(playerName, "default");
+        Logger.info("Player layouts: {0}", InventoryLayout.playerLayouts);
+
+        for (String playerName : InventoryLayout.playerLayouts.keySet()) {
+            if (InventoryLayout.playerLayouts.get(playerName).equals(name)) {
+                InventoryLayout.playerLayouts.put(playerName, "default");
+                Logger.info("Reset inventory layout for player {0} to default", playerName);
             }
         }
 
         try {
-            config.set("inventory." + name, null);
-            config.set("saved-inventories." + name, "default");
-            config.save(configFile);
+            this.layoutsConfig.set("layouts." + name, null);
+            this.config.set("saved-layouts." + name, "default");
+            this.config.save(this.configFile);
+            this.layoutsConfig.save(this.layoutsFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -533,45 +489,64 @@ public class PluginMain extends JavaPlugin implements Listener {
 
 
     public void clearArena() {
-        for (BlockFill fill : arenaFills) {
-            fill.fill(world);
+        for (BlockFill fill : this.arenaFills) {
+            fill.fill(this.world);
         }
 
-        for (Entity e : world.getEntities()) {
+        for (Entity e : this.world.getEntities()) {
             if (!(e instanceof Player)) {e.remove();}
         }
     }
 
     private void loadConfig() {
-        loadInventoryOrders();
-        loadKits();
-        loadArenaFill();
+        this.loadInventoryLayouts();
+        this.loadKits();
+        this.loadArenaFill();
     }
 
-    private void loadInventoryOrders() {
-        var inventorySection = config.getConfigurationSection("inventory");
-        if (inventorySection == null) {return;}
+    private void loadInventoryLayouts() {
+        var layoutsSection = this.layoutsConfig.getConfigurationSection("layouts");
+        if (layoutsSection == null) {return;}
         
-        for (String invKey : inventorySection.getKeys(false)) {
-            InventoryOrder order = new InventoryOrder(invKey);
+        for (String invKey : layoutsSection.getKeys(false)) {
+            InventoryLayout order = new InventoryLayout(invKey);
 
-            var invSection = inventorySection.getConfigurationSection(invKey);
+            var invSection = layoutsSection.getConfigurationSection(invKey);
             if (invSection == null) {continue;}
 
             for (String slot : invSection.getKeys(false)) {
-                order.addSlot(slot, invSection.getInt(slot));
+                order.mapSlot(slot, invSection.getInt(slot));
             }
 
-            InventoryOrder.orders.put(invKey, order);
+            InventoryLayout.layouts.put(invKey, order);
         }
 
-        var savedSection = config.getConfigurationSection("saved-inventories");
+        var placeholdersSection = this.layoutsConfig.getConfigurationSection("placeholders");
+        if (placeholdersSection != null) {
+            for (String slotName : placeholdersSection.getKeys(false)) {
+                String placeholderItem = placeholdersSection.getString(slotName);
+                if (placeholderItem != null) {
+                    this.kitPlaceholders.put(placeholderItem, slotName);
+                }
+            }
+        }
+
+        HashMap<String, ItemTemplate> items = new HashMap<>();
+        for (String placeholderItem : this.kitPlaceholders.keySet()) {
+            String slotName = this.kitPlaceholders.get(placeholderItem);
+            ItemStack itemStack = ItemLoader.loadShortItemStack(placeholderItem);
+            items.put(slotName, new ItemTemplate(itemStack));
+        }
+
+        this.showcaseKit = new Kit("showcase", Material.STICK, items);
+
+        var savedSection = this.config.getConfigurationSection("saved-layouts");
         if (savedSection == null) {return;}
 
         for (String playerName : savedSection.getKeys(false)) {
-            String inventoryName = savedSection.getString(playerName);
-            if (inventoryName != null) {
-                InventoryOrder.playerOrders.put(playerName, inventoryName);
+            String layoutName = savedSection.getString(playerName);
+            if (layoutName != null) {
+                InventoryLayout.playerLayouts.put(playerName, layoutName);
             }
         }
     }
@@ -605,8 +580,6 @@ public class PluginMain extends JavaPlugin implements Listener {
 
             if (kitKey.equals("default")) {
                 defaultKit = new Kit("default", material, items);
-            } else if (kitKey.equals("showcase")) {
-                showcaseKit = new Kit("showcase", material, items);
             } else {
                 kits.add(new Kit(name, material, items));
             }
