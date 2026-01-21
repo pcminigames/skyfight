@@ -116,8 +116,8 @@ public class PluginMain extends JavaPlugin implements Listener {
         this.sm = Bukkit.getScoreboardManager();
         this.scoreboard = sm.getMainScoreboard();
 
-        this.redTeam = GameLib.createTeam("red", "RED", NamedTextColor.RED);
-        this.yellowTeam = GameLib.createTeam("yellow", "YELLOW", NamedTextColor.YELLOW);
+        this.redTeam = GameLib.createTeam("red", "§c§l[RED]§r ", NamedTextColor.RED);
+        this.yellowTeam = GameLib.createTeam("yellow", "§e§l[YELLOW]§r ", NamedTextColor.YELLOW);
         this.teams = List.of(redTeam, yellowTeam);
 
         // TODO: From config
@@ -303,6 +303,8 @@ public class PluginMain extends JavaPlugin implements Listener {
                 } else if (!hasRedFinal && !hasYellowFinal) {
                     Chat.broadcast("§a§lNo one wins!§r");
                 }
+                
+                clearArena();
             });
 
             for (Player p : Bukkit.getOnlinePlayers()) {
@@ -311,7 +313,6 @@ public class PluginMain extends JavaPlugin implements Listener {
             }
 
             this.playersInGame.clear();
-            clearArena();
         }
     }
 
@@ -320,9 +321,15 @@ public class PluginMain extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
 
         if (this.isGame) {
-            GameLib.spectate(player, this.spectatorSpawn);
+            event.setRespawnLocation(this.spectatorSpawn);
+            Bukkit.getScheduler().runTask(this, () -> {
+                GameLib.spectate(player, this.spectatorSpawn);
+            });
         } else {
-            tpToLobby(player);
+            event.setRespawnLocation(this.lobby);
+            Bukkit.getScheduler().runTask(this, () -> {
+                tpToLobby(player);
+            });
         }
     }
 
@@ -375,9 +382,11 @@ public class PluginMain extends JavaPlugin implements Listener {
 
         if (!this.playersInGame.contains(player)) {this.playersInGame.add(player);}
 
-        if (this.playersInGame.size() == Bukkit.getOnlinePlayers().size()) {
-            this.startGame();
-        }
+        Bukkit.getScheduler().runTask(this, () -> {
+            if (this.playersInGame.size() == Bukkit.getOnlinePlayers().size() && !this.isGame) {
+                this.startGame();
+            }
+        });
     }
 
     public void startGame() {
