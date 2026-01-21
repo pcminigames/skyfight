@@ -1,4 +1,4 @@
-package skyfight;
+package com.pythoncraft.skyfight;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,8 +41,8 @@ import org.bukkit.scoreboard.Team;
 
 import com.google.common.collect.MultimapBuilder;
 
-import skyfight.command.InventoryCommand;
-import skyfight.command.InventoryTabCompleter;
+import com.pythoncraft.skyfight.command.InventoryCommand;
+import com.pythoncraft.skyfight.command.InventoryTabCompleter;
 import com.pythoncraft.gamelib.gui.GUIClickEvent;
 import com.pythoncraft.gamelib.gui.GUIIdentifier;
 import com.pythoncraft.gamelib.gui.GUIManager;
@@ -101,6 +101,11 @@ public class PluginMain extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getPluginManager().registerEvents(GUIManager.getInstance(), this);
 
+        // Save default config files from resources if they don't exist
+        saveResource("config.yml", false);
+        saveResource("kits.yml", false);
+        saveResource("layouts.yml", false);
+
         this.configFile  = new File(getDataFolder(), "config.yml");
         this.config        = YamlConfiguration.loadConfiguration(this.configFile);
         this.kitFile     = new File(getDataFolder(), "kits.yml");
@@ -110,22 +115,12 @@ public class PluginMain extends JavaPlugin implements Listener {
 
         this.world = Bukkit.getWorld("world");
 
-        try {config.save(this.configFile);} catch (IOException e) {e.printStackTrace();}
-        try {kitConfig.save(this.kitFile);} catch (IOException e) {e.printStackTrace();}
-
         this.sm = Bukkit.getScoreboardManager();
         this.scoreboard = sm.getMainScoreboard();
 
         this.redTeam = GameLib.createTeam("red", "§c§l[RED]§r ", NamedTextColor.RED);
         this.yellowTeam = GameLib.createTeam("yellow", "§e§l[YELLOW]§r ", NamedTextColor.YELLOW);
         this.teams = List.of(redTeam, yellowTeam);
-
-        // TODO: From config
-        this.redSpawn       = new Location(Bukkit.getWorld("world"), -26, 0, 0, -90, 0).add(0.5, 0, 0.5);
-        this.yellowSpawn    = new Location(Bukkit.getWorld("world"),  26, 0, 0, +90, 0).add(0.5, 0, 0.5);
-        this.spawnPoints    = List.of(redSpawn, yellowSpawn);
-        this.lobby          = new Location(Bukkit.getWorld("world"), 0, 122, 0).add(0.5, 0, 0.5);
-        this.spectatorSpawn = new Location(Bukkit.getWorld("world"), 0, 60, 0).add(0.5, 0, 0.5);
 
         this.loadConfig();
 
@@ -404,6 +399,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         PlayerActions.setupPlayerReset(null).accept(player, playersInGame);
         player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
+        player.setFallDistance(0);
         player.teleport(this.lobby);
 
         if (!this.isGame) {player.getInventory().setItem(0, getMenuItem());}
@@ -511,6 +507,13 @@ public class PluginMain extends JavaPlugin implements Listener {
         this.loadInventoryLayouts();
         this.loadKits();
         this.loadArenaFill();
+
+        this.redSpawn       = ItemLoader.getLocationFromSection(this.config.getConfigurationSection("spawn-locations.red"), this.world);
+        this.yellowSpawn    = ItemLoader.getLocationFromSection(this.config.getConfigurationSection("spawn-locations.yellow"), this.world);
+        this.lobby          = ItemLoader.getLocationFromSection(this.config.getConfigurationSection("spawn-locations.lobby"), this.world);
+        this.spectatorSpawn = ItemLoader.getLocationFromSection(this.config.getConfigurationSection("spawn-locations.spectator"), this.world);
+
+        this.spawnPoints = List.of(redSpawn, yellowSpawn);
     }
 
     private void loadInventoryLayouts() {

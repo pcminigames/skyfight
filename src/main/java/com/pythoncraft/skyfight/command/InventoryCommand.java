@@ -1,4 +1,4 @@
-package skyfight.command;
+package com.pythoncraft.skyfight.command;
 
 import java.util.HashMap;
 
@@ -11,7 +11,7 @@ import org.bukkit.inventory.Inventory;
 import com.pythoncraft.gamelib.Chat;
 import com.pythoncraft.gamelib.inventory.InventoryLayout;
 
-import skyfight.PluginMain;
+import com.pythoncraft.skyfight.PluginMain;
 
 public class InventoryCommand implements CommandExecutor {
     public static HashMap<Player, String> creatingModePlayers = new HashMap<>();

@@ -1,4 +1,4 @@
-package skyfight.command;
+package com.pythoncraft.skyfight.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;

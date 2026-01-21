@@ -13,6 +13,20 @@ spwawn-locations:
     z: 0
     yaw: -90
     pitch: 0
+  
+  lobby:
+    x: 0
+    y: 122
+    z: 0
+    yaw: 0
+    pitch: 0
+  
+  spectator:
+    x: 0
+    y: 60
+    z: 0
+    yaw: 0
+    pitch: 0
 
 arena-fill:
   '1':

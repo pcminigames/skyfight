@@ -1,6 +1,3 @@
-# Rozhodně nikdy neupravuj kit "showcase"
-# A "default" taky ne, pokud nevíš, co děláš.
-# Pokud chceš přidat nový kit, přidej ho na konec tohoto souboru.
 
 kits:
   default:
@@ -76,76 +73,8 @@ kits:
       arrow: arrow*64
       potato: baked_potato*64
   
-  showcase:
-    name: showcase
-    material: diamond
-    items:
-      axe:
-        id: iron_axe
-        durability: 0
-      planks1: oak_planks*64
-      pickaxe:
-        id: iron_pickaxe
-        durability: 0
-      bow:
-        id: stick
-        custom-name: Bow
-      pork: cooked_porkchop*16
-      gapple: golden_apple*2
-      pearl: snowball
-      water: water_bucket
-      
-      sword: iron_sword
-      bucket: bucket
-      
-      stone1: cobblestone*64
-      stone2: stone*64
-      stone3: smooth_stone*64
-      planks2: jungle_planks*64
-      planks3: spruce_planks*64
-      planks4: birch_planks*64
-      logs1: oak_log*64
-      logs2: jungle_log*64
-      logs3: spruce_log*64
-      
-      feet:
-        id: diamond_boots
-        durability: 0
-      legs:
-        id: diamond_leggings
-        durability: 0
-      chest:
-        id: diamond_chestplate
-        durability: 0
-      head:
-        id: diamond_helmet
-        durability: 0
-      shield:
-        id: shield
-        durability: 0
-      flint:
-        id: flint_and_steel
-        durability: 0
-      arrow: arrow*64
-      potato: baked_potato*64
-      
-      k1: red_concrete
-      k2: orange_concrete
-      k3: yellow_concrete
-      k4: lime_concrete
-      k5: green_concrete
-      k6: cyan_concrete
-      k7: light_blue_concrete
-      k8: blue_concrete
-      k9: purple_concrete
-      k10: magenta_concrete
-      k11: pink_concrete
-      k12: white_concrete
-      k13: gray_concrete
-      k14: black_concrete
-  
   knockback:
-    name: §6§lKnockback
+    name: §b§lKnockback
     material: iron_sword
     items:
       k1:
@@ -155,7 +84,7 @@ kits:
         durability: 0
   
   elytra:
-    name: §b§lElytra
+    name: §7§lElytra
     material: elytra
     items:
       k1:
@@ -163,20 +92,20 @@ kits:
         durability: 33
   
   dripstone:
-    name: Dripstone
+    name: §6§lDripstone
     material: pointed_dripstone
     items:
       k1: pointed_dripstone*64
       k2: pointed_dripstone*64
   
   creeper:
-    name: Creeper
+    name: §2§lCreeper
     material: creeper_spawn_egg
     items:
       k1: creeper_spawn_egg*12
   
   silverfish:
-    name: Infested
+    name: §7§lInfested
     material: silverfish_spawn_egg
     items:
       k1: silverfish_spawn_egg*8
@@ -191,7 +120,7 @@ kits:
         custom-name: Arrow of Infestation
   
   heal:
-    name: Heal
+    name: §d§lHeal
     material: golden_apple
     items:
       k1: hay_block*64
@@ -249,14 +178,14 @@ kits:
         id: air
   
   anchor:
-    name: Respawn anchor
+    name: §d§lRespawn anchor
     material: respawn_anchor
     items:
       k1: respawn_anchor*8
       k2: glowstone*64
   
   totem:
-    name: Totem of undying
+    name: §e§lTotem of undying
     material: totem_of_undying
     items:
       k1:
@@ -265,13 +194,13 @@ kits:
         id: totem_of_undying
   
   wind_charge:
-    name: Wind charge
+    name: §f§lWind charge
     material: wind_charge
     items:
       k1: wind_charge*5
   
   cheater:
-    name: Cheater
+    name: §d§lCheater
     material: command_block
     items:
       k1:
@@ -290,20 +219,20 @@ kits:
         custom-name: Potion of Cheating
   
   lava:
-    name: Lava
+    name: §6§lLava
     material: lava_bucket
     items:
       k1:
         id: lava_bucket
   
   cobweb:
-    name: Cobweb
+    name: §f§lCobweb
     material: cobweb
     items:
       k1: cobweb*16
   
   levitation:
-    name: Levitation
+    name: §f§lLevitation
     material: shulker_shell
     items:
       k1:
@@ -340,7 +269,7 @@ kits:
         custom-name: Potion of Levitation IV
   
   slow_falling:
-    name: Slow Falling
+    name: §7§lSlow Falling
     material: feather
     items:
       k1:
@@ -377,7 +306,7 @@ kits:
         custom-name: Potion of Slow Falling IV
   
   troll:
-    name: Troll
+    name: §c§lTroll
     material: poisonous_potato
     items:
       k1: barrier*2
@@ -385,20 +314,20 @@ kits:
       k3: music_disc_creator_music_box
   
   crystal:
-    name: End crystal
+    name: §d§lEnd crystal
     material: end_crystal
     items:
       k1: end_crystal*4
       k2: obsidian*12
   
   tnt:
-    name: TNT
+    name: §c§lTNT
     material: tnt
     items:
       k1: tnt*16
   
   cart:
-    name: TNT minecart
+    name: §c§lTNT minecart
     material: tnt_minecart
     items:
       k1: rail*64
@@ -413,7 +342,7 @@ kits:
       k10: tnt_minecart
   
   piercing:
-    name: Piercing
+    name: §b§lPiercing
     material: crossbow
     items:
       k1:
@@ -423,7 +352,7 @@ kits:
         durability: 0
   
   infinity:
-    name: Infinity
+    name: §b§lInfinity
     material: arrow
     items:
       bow:
@@ -433,7 +362,7 @@ kits:
         durability: 0
   
   one_shot:
-    name: One shot bow
+    name: §c§lOne shot bow
     material: bow
     items:
       k1:
@@ -443,14 +372,14 @@ kits:
         durability: 1
   
   vault:
-    name: vault
+    name: §6§lVault
     material: trial_key
     items:
       k1: vault
       k2: trial_key
   
   blocks:
-    name: Blocks
+    name: §8§lBlocks
     material: Copper_block
     items:
       k1: anvil
@@ -459,7 +388,7 @@ kits:
       k4: sponge*64
   
   mace:
-    name: Mace
+    name: §b§lMace
     material: mace
     items:
       k1:
@@ -467,7 +396,7 @@ kits:
         durability: 0
   
   fire_aspect:
-    name: Fire aspect
+    name: §6§lFire aspect
     material: fire_charge
     items:
       k1:
@@ -477,7 +406,7 @@ kits:
         durability: 0
   
   rod:
-    name: Fishing rod
+    name: §f§lFishing rod
     material: fishing_rod
     items:
       k1:
@@ -485,13 +414,13 @@ kits:
         durability: 0
   
   pearl:
-    name: Ender pearl
+    name: §5§lEnder pearl
     material: ender_pearl
     items:
       pearl: ender_pearl*6
   
   efficiency:
-    name: Efficiency
+    name: §b§lEfficiency
     material: iron_pickaxe
     items:
       axe:
@@ -511,7 +440,7 @@ kits:
         durability: 0
   
   armor:
-    name: Armor
+    name: §b§lArmor
     material: diamond_chestplate
     items:
       feet:
@@ -556,7 +485,7 @@ kits:
         durability: 0
   
   thorns:
-    name: Thorns
+    name: §b§lThorns
     material: prismarine_crystals
     items:
       feet:
@@ -601,13 +530,13 @@ kits:
         durability: 0
   
   pufferfish:
-    name: Pufferfish
+    name: §6§lPufferfish
     material: pufferfish_bucket
     items:
       k1: pufferfish_spawn_egg*4
   
   jump_boost:
-    name: Jump Boost
+    name: §a§lJump Boost
     material: slime_ball
     items:
       k1:
@@ -620,7 +549,7 @@ kits:
         custom-name: Potion of Leaping II
   
   arrows:
-    name: Tipped Arrows
+    name: §d§lTipped Arrows
     material: tipped_arrow
     items:
       k1:
@@ -661,7 +590,7 @@ kits:
         custom-name: Arrow of Poison
   
   trident:
-    name: Trident
+    name: §b§lTrident
     material: trident
     items:
       k1:
