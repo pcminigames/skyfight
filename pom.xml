@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.pythoncraft.gamelib</groupId>
             <artifactId>gamelib</artifactId>
-            <version>3.1</version>
+            <version>3.2</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

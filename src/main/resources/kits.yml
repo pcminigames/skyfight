@@ -1,4 +1,3 @@
-
 kits:
   default:
     name: default
@@ -7,7 +6,7 @@ kits:
       axe:
         id: iron_axe
         durability: 0
-      planks1: oak_planks*64
+      planks1: jungle_planks*64
       pickaxe:
         id: iron_pickaxe
         durability: 0
@@ -72,9 +71,9 @@ kits:
         durability: 0
       arrow: arrow*64
       potato: baked_potato*64
-  
+ 
   knockback:
-    name: §b§lKnockback
+    name: §6§lKnockback
     material: iron_sword
     items:
       k1:
@@ -84,7 +83,7 @@ kits:
         durability: 0
   
   elytra:
-    name: §7§lElytra
+    name: §b§lElytra
     material: elytra
     items:
       k1:
@@ -92,26 +91,27 @@ kits:
         durability: 33
   
   dripstone:
-    name: §6§lDripstone
+    name: Dripstone
     material: pointed_dripstone
     items:
       k1: pointed_dripstone*64
       k2: pointed_dripstone*64
   
   creeper:
-    name: §2§lCreeper
+    name: Creeper
     material: creeper_spawn_egg
     items:
-      k1: creeper_spawn_egg*12
+      k1: creeper_spawn_egg*32
   
   silverfish:
-    name: §7§lInfested
+    name: Infested
     material: silverfish_spawn_egg
     items:
       k1: silverfish_spawn_egg*8
       k2: infested_cobblestone*32
       k3:
         id: tipped_arrow
+        count: 8
         effects:
           infested:
             duration: 9600
@@ -120,7 +120,7 @@ kits:
         custom-name: Arrow of Infestation
   
   heal:
-    name: §d§lHeal
+    name: Heal
     material: golden_apple
     items:
       k1: hay_block*64
@@ -173,19 +173,19 @@ kits:
         potion-color: d55495
         custom-name: Potion of Instant health II
       gapple: golden_apple*4
-      pork: cooked_porkchop*643
+      pork: cooked_porkchop*64
       potato:
         id: air
   
   anchor:
-    name: §d§lRespawn anchor
+    name: Respawn anchor
     material: respawn_anchor
     items:
-      k1: respawn_anchor*8
+      k1: respawn_anchor*64
       k2: glowstone*64
   
   totem:
-    name: §e§lTotem of undying
+    name: Totem of undying
     material: totem_of_undying
     items:
       k1:
@@ -194,13 +194,13 @@ kits:
         id: totem_of_undying
   
   wind_charge:
-    name: §f§lWind charge
+    name: Wind charge
     material: wind_charge
     items:
-      k1: wind_charge*5
+      k1: wind_charge*16
   
   cheater:
-    name: §d§lCheater
+    name: Cheater
     material: command_block
     items:
       k1:
@@ -219,20 +219,22 @@ kits:
         custom-name: Potion of Cheating
   
   lava:
-    name: §6§lLava
+    name: Lava
     material: lava_bucket
     items:
       k1:
         id: lava_bucket
+      k2:
+        id: lava_bucket
   
   cobweb:
-    name: §f§lCobweb
+    name: Cobweb
     material: cobweb
     items:
-      k1: cobweb*16
+      k1: cobweb*64
   
   levitation:
-    name: §f§lLevitation
+    name: Levitation
     material: shulker_shell
     items:
       k1:
@@ -269,7 +271,7 @@ kits:
         custom-name: Potion of Levitation IV
   
   slow_falling:
-    name: §7§lSlow Falling
+    name: Slow Falling
     material: feather
     items:
       k1:
@@ -304,30 +306,29 @@ kits:
             amplifier: 3
         potion-color: 6f6186
         custom-name: Potion of Slow Falling IV
-  
   troll:
-    name: §c§lTroll
+    name: Troll
     material: poisonous_potato
     items:
-      k1: barrier*2
+      k1: barrier*8
       k2: jukebox*64
       k3: music_disc_creator_music_box
   
   crystal:
-    name: §d§lEnd crystal
+    name: End crystal
     material: end_crystal
     items:
-      k1: end_crystal*4
-      k2: obsidian*12
+      k1: end_crystal*64
+      k2: obsidian*64
   
   tnt:
-    name: §c§lTNT
+    name: TNT
     material: tnt
     items:
-      k1: tnt*16
+      k1: tnt*32
   
   cart:
-    name: §c§lTNT minecart
+    name: TNT minecart
     material: tnt_minecart
     items:
       k1: rail*64
@@ -342,7 +343,7 @@ kits:
       k10: tnt_minecart
   
   piercing:
-    name: §b§lPiercing
+    name: Piercing
     material: crossbow
     items:
       k1:
@@ -352,7 +353,7 @@ kits:
         durability: 0
   
   infinity:
-    name: §b§lInfinity
+    name: Infinity
     material: arrow
     items:
       bow:
@@ -362,7 +363,7 @@ kits:
         durability: 0
   
   one_shot:
-    name: §c§lOne shot bow
+    name: One shot bow
     material: bow
     items:
       k1:
@@ -372,23 +373,23 @@ kits:
         durability: 1
   
   vault:
-    name: §6§lVault
+    name: vault
     material: trial_key
     items:
-      k1: vault
-      k2: trial_key
+      k1: vault*2
+      k2: trial_key*2
   
   blocks:
-    name: §8§lBlocks
+    name: Blocks
     material: Copper_block
     items:
-      k1: anvil
+      k1: anvil*2
       k2: copper_block*64
       k3: honey_block*64
       k4: sponge*64
   
   mace:
-    name: §b§lMace
+    name: Mace
     material: mace
     items:
       k1:
@@ -396,7 +397,7 @@ kits:
         durability: 0
   
   fire_aspect:
-    name: §6§lFire aspect
+    name: Fire aspect
     material: fire_charge
     items:
       k1:
@@ -406,7 +407,7 @@ kits:
         durability: 0
   
   rod:
-    name: §f§lFishing rod
+    name: Fishing rod
     material: fishing_rod
     items:
       k1:
@@ -414,13 +415,13 @@ kits:
         durability: 0
   
   pearl:
-    name: §5§lEnder pearl
+    name: Ender pearl
     material: ender_pearl
     items:
       pearl: ender_pearl*6
   
   efficiency:
-    name: §b§lEfficiency
+    name: Efficiency
     material: iron_pickaxe
     items:
       axe:
@@ -440,7 +441,7 @@ kits:
         durability: 0
   
   armor:
-    name: §b§lArmor
+    name: Armor
     material: diamond_chestplate
     items:
       feet:
@@ -485,7 +486,7 @@ kits:
         durability: 0
   
   thorns:
-    name: §b§lThorns
+    name: Thorns
     material: prismarine_crystals
     items:
       feet:
@@ -530,13 +531,13 @@ kits:
         durability: 0
   
   pufferfish:
-    name: §6§lPufferfish
+    name: Pufferfish
     material: pufferfish_bucket
     items:
-      k1: pufferfish_spawn_egg*4
+      k1: pufferfish_spawn_egg*32
   
   jump_boost:
-    name: §a§lJump Boost
+    name: Jump Boost
     material: slime_ball
     items:
       k1:
@@ -549,7 +550,7 @@ kits:
         custom-name: Potion of Leaping II
   
   arrows:
-    name: §d§lTipped Arrows
+    name: Tipped Arrows
     material: tipped_arrow
     items:
       k1:
@@ -590,7 +591,7 @@ kits:
         custom-name: Arrow of Poison
   
   trident:
-    name: §b§lTrident
+    name: Trident
     material: trident
     items:
       k1:
@@ -607,3 +608,10 @@ kits:
       k8: water_bucket
       k9: water_bucket
       k10: water_bucket
+  spear:
+    name: Spear
+    material: iron_spear
+    items:
+      k1:
+        id: iron_spear
+        durability: 0

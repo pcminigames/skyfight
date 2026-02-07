@@ -1,17 +1,17 @@
 
-spwawn-locations:
+spawn-locations:
   red:
     x: -26
     y: 0
     z: 0
-    yaw: 90
+    yaw: -90
     pitch: 0
   
   yellow:
     x: 26
     y: 0
     z: 0
-    yaw: -90
+    yaw: 90
     pitch: 0
   
   lobby:

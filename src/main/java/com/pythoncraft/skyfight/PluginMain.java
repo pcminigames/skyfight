@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -123,6 +124,9 @@ public class PluginMain extends JavaPlugin implements Listener {
         this.teams = List.of(redTeam, yellowTeam);
 
         this.loadConfig();
+
+        this.world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        this.world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
 
         GUIManager.getInstance().register("team", true, guiPlayer -> {
             Inventory inventory = Bukkit.createInventory(new GUIIdentifier("team"), 27, Chat.component("§lSelect Team"));
@@ -473,12 +477,9 @@ public class PluginMain extends JavaPlugin implements Listener {
     public void removeLayout(String name) {
         InventoryLayout.layouts.remove(name);
 
-        Logger.info("Player layouts: {0}", InventoryLayout.playerLayouts);
-
         for (String playerName : InventoryLayout.playerLayouts.keySet()) {
             if (InventoryLayout.playerLayouts.get(playerName).equals(name)) {
                 InventoryLayout.playerLayouts.put(playerName, "default");
-                Logger.info("Reset inventory layout for player {0} to default", playerName);
             }
         }
 
@@ -546,7 +547,7 @@ public class PluginMain extends JavaPlugin implements Listener {
         HashMap<String, ItemTemplate> items = new HashMap<>();
         for (String placeholderItem : this.kitPlaceholders.keySet()) {
             String slotName = this.kitPlaceholders.get(placeholderItem);
-            ItemStack itemStack = ItemLoader.loadShortItemStack(placeholderItem);
+            ItemStack itemStack = ItemLoader.loadShort(placeholderItem);
             items.put(slotName, new ItemTemplate(itemStack));
         }
 
@@ -588,7 +589,7 @@ public class PluginMain extends JavaPlugin implements Listener {
                 put("red",    (Player p) -> redTeam.hasPlayer(p));
             }});
 
-            Logger.info("Loaded kit {0} - {1} items", name, items.size());
+            Logger.info("Loaded kit {0} - {1} items\n\n", name, items.size());
 
             if (kitKey.equals("default")) {
                 defaultKit = new Kit("default", material, items);
