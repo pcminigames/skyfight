@@ -167,6 +167,12 @@ public class PluginMain extends JavaPlugin implements Listener {
                 slot += 1;
             }
 
+            ItemStack randomKit = new ItemStack(Material.BOOK);
+            ItemMeta randomKitMeta = randomKit.getItemMeta();
+            randomKitMeta.displayName(Chat.component("§b§lRandom Kit"));
+            randomKit.setItemMeta(randomKitMeta);
+            inventory.setItem(52, randomKit);
+
             ItemStack barrier = new ItemStack(Material.BARRIER);
             ItemMeta barrierMeta = barrier.getItemMeta();
             barrierMeta.displayName(Chat.component("§c§lBack to team selection"));
@@ -243,6 +249,16 @@ public class PluginMain extends JavaPlugin implements Listener {
                     return;
                 }
                 playerStart(player, kits.get(slot));
+            } else if (slot == 52) {
+                Team team = scoreboard.getEntityTeam(player);
+                if (team == null) {
+                    player.sendMessage("You must select a team first!");
+                    player.closeInventory();
+                    GUIManager.getInstance().open("team", player);
+                    return;
+                }
+                int randomIndex = (int) (Math.random() * kits.size());
+                playerStart(player, kits.get(randomIndex));
             } else if (slot == 53) {
                 player.closeInventory();
                 GUIManager.getInstance().open("team", player);

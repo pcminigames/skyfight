@@ -1,5 +1,5 @@
 name: "skyfight"
-version: "4.3"
+version: "4.4"
 main: "com.pythoncraft.skyfight.PluginMain"
 api-version: "1.21"
 authors: [pythoncraft]
